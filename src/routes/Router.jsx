@@ -4,14 +4,38 @@ import HomePage from "../pages/HomePage";
 import SignInPage from "../pages/SignInPage";
 import AdminPage from "../pages/AdminPage";
 import UserPage from "../pages/UserPage";
+import ProtectedAdminRoute from "../components/auth/ProtectedAdminRoute";
+import ProtectedUserRoute from "../components/auth/ProtectedUserRoute";
+import SignInRedirect from "../components/auth/SignInRedirect";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<HomePage />} />
-      <Route path="/signin" element={<SignInPage />} />
-      <Route path="/admin" element={<AdminPage />} />
-      <Route path="/user" element={<UserPage />} />
+      <Route
+        path="/signin"
+        element={
+          <SignInRedirect>
+            <SignInPage />
+          </SignInRedirect>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedAdminRoute>
+            <AdminPage />
+          </ProtectedAdminRoute>
+        }
+      />
+      <Route
+        path="/user"
+        element={
+          <ProtectedUserRoute>
+            <UserPage />
+          </ProtectedUserRoute>
+        }
+      />
     </Route>
   )
 );

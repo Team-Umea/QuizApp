@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ENDPOINTS } from "../api/endpoints";
+import { AUTHECHO_ENDPOINTS } from "../api/endpoints";
 
 const IS_AUTHENTICATED_KEY = "IS_AUTHENTICATED_KEY";
 const IS_ADMIN_KEY = "IS_ADMIN_KEY";
@@ -18,8 +18,8 @@ const initialState = {
 
 export const verifySession = createAsyncThunk("session/verifySession", async () => {
   const [sessionResponse, activityResponse] = await Promise.allSettled([
-    axios.get(ENDPOINTS.VERIFYSESSION),
-    axios.put(ENDPOINTS.TRACKACTIVITY),
+    axios.get(AUTHECHO_ENDPOINTS.VERIFYSESSION),
+    axios.put(AUTHECHO_ENDPOINTS.TRACKACTIVITY),
   ]);
 
   return {
