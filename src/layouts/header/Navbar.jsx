@@ -45,7 +45,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="px-8 py-4 bg-black text-white font-semibold flex justify-between items-center">
+    <nav className="px-8 py-4 bg-gray-900 text-white font-semibold flex justify-between items-center">
       <NavLink to="/" className="text-xl">
         Quiz App
       </NavLink>

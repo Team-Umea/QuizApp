@@ -22,7 +22,7 @@ export default function RootLayout() {
   return (
     <div>
       <Header />
-      <main className="min-h-screen bg-slate-900 text-white oveflow-x-hidden">
+      <main className="min-h-screen bg-gray-600 text-white oveflow-x-hidden">
         <PageTransition>
           <Outlet />
         </PageTransition>

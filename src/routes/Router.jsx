@@ -7,6 +7,7 @@ import UserPage from "../pages/UserPage";
 import ProtectedAdminRoute from "../components/auth/ProtectedAdminRoute";
 import ProtectedUserRoute from "../components/auth/ProtectedUserRoute";
 import SignInRedirect from "../components/auth/SignInRedirect";
+import CreateQuizPage from "../pages/CreateQuizPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,8 +27,9 @@ const router = createBrowserRouter(
           <ProtectedAdminRoute>
             <AdminPage />
           </ProtectedAdminRoute>
-        }
-      />
+        }>
+        <Route path="createquiz" element={<CreateQuizPage />} />
+      </Route>
       <Route
         path="/user"
         element={
