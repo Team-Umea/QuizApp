@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const Router = require("./routes/Router");
-const ProxyRouter = require("./routes/ProxyRouter");
 
 require("dotenv").config();
 
@@ -17,7 +16,6 @@ const openCors = cors({
 
 app.use(openCors);
 
-app.use(ProxyRouter);
 app.use(Router);
 
 app.listen(PORT, () => {
