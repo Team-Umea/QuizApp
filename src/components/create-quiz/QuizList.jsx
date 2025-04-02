@@ -17,11 +17,15 @@ export default function QuizList() {
     setValue("questions", reorderedQuestions);
   };
 
+  const hasQuestions = questions && questions.length > 0;
+
   return (
-    <div className="max-w-[300px] p-4 h-full bg-gray-800">
-      <p className="p-4 text-lg font-semibold mb-8 bg-gradient-to-b from-blue-800 to-indigo-600">
-        Your question. Click on one to edit or drag them around to change order
-      </p>
+    <div className="max-w-[500px] p-4 h-full bg-gray-800">
+      <h4 className="p-4 text-lg font-semibold mb-8 bg-gradient-to-b from-blue-800 to-indigo-600 text-gray-200">
+        {hasQuestions
+          ? "Start building your perfect quiz by adding engaging questions, customizing answer choices, and setting the correct responses with ease. Whether it’s for fun, learning, or testing knowledge, create an interactive experience that keeps your audience hooked! 🚀"
+          : "No questions yet! Start by adding your first question, then edit or rearrange them anytime to create the perfect quiz experience. 🚀"}
+      </h4>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="quizList">
           {(provided) => (
