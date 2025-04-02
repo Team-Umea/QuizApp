@@ -1,11 +1,11 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { useFormContext } from "react-hook-form";
 import QuizCard from "./QuizCard";
+import { useQuestionContext } from "../../context/CreateQuizContext";
 
 export default function QuizList() {
-  const { watch, setValue } = useFormContext();
+  const { questionState, setQuestionState } = useQuestionContext();
 
-  const questions = watch("questions");
+  const questions = questionState.questions;
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -14,7 +14,7 @@ export default function QuizList() {
     const [movedItem] = reorderedQuestions.splice(result.source.index, 1);
     reorderedQuestions.splice(result.destination.index, 0, movedItem);
 
-    setValue("questions", reorderedQuestions);
+    setQuestionState((prev) => ({ ...prev, questions: reorderedQuestions }));
   };
 
   const hasQuestions = questions && questions.length > 0;
@@ -23,7 +23,7 @@ export default function QuizList() {
     <div className="max-w-[500px] p-4 h-full bg-gray-800">
       <h4 className="p-4 text-lg font-semibold mb-8 bg-gradient-to-b from-blue-800 to-indigo-600 text-gray-200">
         {hasQuestions
-          ? "Start building your perfect quiz by adding engaging questions, customizing answer choices, and setting the correct responses with ease. Whether it’s for fun, learning, or testing knowledge, create an interactive experience that keeps your audience hooked! 🚀"
+          ? "Your questions are ready! Click on any question to edit its details, or simply drag and drop to rearrange the order and customize the flow of your quiz effortlessly."
           : "No questions yet! Start by adding your first question, then edit or rearrange them anytime to create the perfect quiz experience. 🚀"}
       </h4>
       <DragDropContext onDragEnd={onDragEnd}>

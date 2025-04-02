@@ -1,13 +1,24 @@
 import { useState } from "react";
 import { IoMdCheckmark } from "react-icons/io";
 import { FaRegCircle } from "react-icons/fa";
+import { useFormContext } from "react-hook-form";
 
-export default function OptionCard({ index, isCorrect, setAnswer, bgColor }) {
-  const [isAnswer, setIsAnswer] = useState(isCorrect ? true : false);
+export default function OptionCard({ index, bgColor }) {
+  const { register, watch, getValues, setValue } = useFormContext();
+  const [isAnswer, setIsAnswer] = useState(getValues("answers").includes(index));
+
+  const answers = watch("answers");
 
   const toggleIsAnswer = () => {
     setIsAnswer((prev) => !prev);
-    setAnswer();
+
+    if (isAnswer) {
+      const filteredAnswers = [...answers].filter((answer) => answer !== index);
+      setValue("answers", filteredAnswers);
+    } else {
+      const updatedAnswers = [...new Set([...answers, index])];
+      setValue("answers", updatedAnswers);
+    }
   };
 
   return (
@@ -24,8 +35,10 @@ export default function OptionCard({ index, isCorrect, setAnswer, bgColor }) {
       </div>
       <input
         type="text"
+        {...register(`options.${index}`)}
+        maxLength={50}
         placeholder={`Enter option ${index + 1}`}
-        className="p-2 rounded-lg border-2 border-gray-200 outline-none"
+        className="p-2 rounded-md border-2 border-gray-200 outline-none"
       />
     </div>
   );
