@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdCheckmark } from "react-icons/io";
 import { FaRegCircle } from "react-icons/fa";
 import { useFormContext } from "react-hook-form";
@@ -8,6 +8,10 @@ export default function OptionCard({ index, bgColor }) {
   const [isAnswer, setIsAnswer] = useState(getValues("answers").includes(index));
 
   const answers = watch("answers");
+
+  useEffect(() => {
+    setIsAnswer(getValues("answers").includes(index));
+  }, [getValues()]);
 
   const toggleIsAnswer = () => {
     setIsAnswer((prev) => !prev);

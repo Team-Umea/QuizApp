@@ -1,13 +1,20 @@
 import { MdDragIndicator } from "react-icons/md";
+import { useQuestionContext } from "../../context/CreateQuizContext";
 
 export default function QuizCard({ question, index }) {
+  const { setQuestionState } = useQuestionContext();
+
+  const editQuestion = () => {
+    setQuestionState((prev) => ({ ...prev, editingQuestion: question }));
+  };
+
   return (
-    <div className="px-4 py-6 bg-gray-900 cursor-pointer">
+    <button onClick={editQuestion} className="px-4 py-6 w-full bg-gray-900 cursor-pointer">
       <div className="flex justify-between items-center">
-        <p className="text-gray-200 font-semibold">{index}.</p>
+        <p className="text-gray-200 text-left font-semibold">{index}.</p>
         <MdDragIndicator className="cursor-grab" />
       </div>
-      <p>{question.question}</p>
-    </div>
+      <p className="text-left">{question.question}</p>
+    </button>
   );
 }
