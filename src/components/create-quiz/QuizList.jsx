@@ -20,7 +20,7 @@ export default function QuizList() {
   const hasQuestions = questions && questions.length > 0;
 
   return (
-    <div className="max-w-[500px] p-4 h-full bg-gray-800">
+    <div className="w-full lg:w-[400px] lg:min-h-screen p-4 h-full bg-gray-800">
       <h4 className="p-4 text-lg font-semibold mb-8 bg-gradient-to-b from-blue-800 to-indigo-600 text-gray-200">
         {hasQuestions
           ? "Your questions are ready! Click on any question to edit its details, or simply drag and drop to rearrange the order and customize the flow of your quiz effortlessly."

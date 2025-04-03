@@ -130,16 +130,6 @@ export default function QuizForm() {
       return;
     }
 
-    console.log(data);
-
-    // const cleanedData = {
-    //   ...data,
-    //   options: data.options.filter((opt) => opt),
-    //   answers: Array.from({ length: 4 })
-    //     .map((_, index) => (data.answers.some((ans) => ans === index) ? data.options[index] : null))
-    //     .filter((ans) => ans),
-    // };
-
     if (isEditing) {
       const updatedQuestions = questionState.questions.map((question) =>
         question.id === data.id ? data : question
@@ -158,9 +148,7 @@ export default function QuizForm() {
     });
   };
 
-  const onError = (err) => {
-    console.log("Form error; ", err);
-    console.log("FormData: ", getValues());
+  const onError = () => {
     scrollToTopSmooth();
   };
 
@@ -223,7 +211,7 @@ export default function QuizForm() {
                   <IoMdCheckmark size={24} className="inline" /> - Options marked with a checkmark
                   are the correct answers to the question
                 </p>
-                <div className="grid grid-cols-[repeat(2,1fr)] gap-4">
+                <div className="grid grid-cols-[1fr] lg:grid-cols-[repeat(2,1fr)] gap-4">
                   {Array.from({ length: 4 }, (_, index) => {
                     return (
                       <OptionCard
