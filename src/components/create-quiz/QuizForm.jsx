@@ -24,7 +24,7 @@ export default function QuizForm() {
       : {
           id: generateID(questionState.questions),
           question: "",
-          options: [],
+          options: ["", "", "", ""],
           answers: [0],
         },
   });
@@ -48,7 +48,7 @@ export default function QuizForm() {
         : {
             id: generateID(questionState.questions),
             question: "",
-            options: [],
+            options: ["", "", "", ""],
             answers: [0],
           }
     );
@@ -63,7 +63,7 @@ export default function QuizForm() {
     reset({
       id: generateID(questionState.questions),
       question: "",
-      options: [],
+      options: ["", "", "", ""],
       answers: [0],
     });
   };
@@ -73,7 +73,7 @@ export default function QuizForm() {
     reset({
       id: generateID(questionState.questions),
       question: "",
-      options: [],
+      options: ["", "", "", ""],
       answers: [0],
     });
   };
@@ -114,8 +114,10 @@ export default function QuizForm() {
       return;
     }
 
+    console.log(data);
+
     const hasCorrespondingAnswer = data.options.some(
-      (opt, index) => data.answers.find((answer) => answer === index) && opt
+      (opt, index) => data.answers.find((answer) => answer === index) === index && opt
     );
 
     if (!hasCorrespondingAnswer) {
@@ -128,13 +130,15 @@ export default function QuizForm() {
       return;
     }
 
-    const cleanedData = {
-      ...data,
-      options: data.options.filter((opt) => opt),
-      answers: Array.from({ length: 4 })
-        .map((_, index) => (data.answers.some((ans) => ans === index) ? data.options[index] : null))
-        .filter((ans) => ans),
-    };
+    console.log(data);
+
+    // const cleanedData = {
+    //   ...data,
+    //   options: data.options.filter((opt) => opt),
+    //   answers: Array.from({ length: 4 })
+    //     .map((_, index) => (data.answers.some((ans) => ans === index) ? data.options[index] : null))
+    //     .filter((ans) => ans),
+    // };
 
     if (isEditing) {
       const updatedQuestions = questionState.questions.map((question) =>
@@ -142,14 +146,14 @@ export default function QuizForm() {
       );
       setQuestionState((prev) => ({ ...prev, editingQuestion: null, questions: updatedQuestions }));
     } else {
-      const newQuestions = [...questionState.questions, cleanedData];
+      const newQuestions = [...questionState.questions, data];
       setQuestionState((prev) => ({ ...prev, questions: newQuestions }));
     }
 
     reset({
       id: generateID(questionState.questions),
       question: "",
-      options: [],
+      options: ["", "", "", ""],
       answers: [0],
     });
   };
