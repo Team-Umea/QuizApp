@@ -11,6 +11,7 @@ import useScrollTo from "../../hooks/useScrollTo";
 import { useEffect } from "react";
 import DefaultBtn from "../btn/DefaultBtn";
 import DeleteBtn from "../btn/DeleteBtn";
+import QuizNameForm from "./QuizNameForm";
 
 const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
 
@@ -156,11 +157,12 @@ export default function QuizForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-medium p-4 bg-gray-800 text-gray-200">
+      {/* <h2 className="text-xl font-medium p-4 bg-gray-800 text-gray-200">
         Start building your perfect quiz by adding engaging questions, customizing answer choices,
         and setting the correct responses with ease. Whether it’s for fun, learning, or testing
         knowledge, create an interactive experience that keeps your audience hooked! 🚀
-      </h2>
+      </h2> */}
+      <QuizNameForm />
       <div className="flex flex-col justify-between w-full h-full p-8 bg-gray-800">
         <div className="flex justify-between">
           <div className="flex flex-col gap-y-2">

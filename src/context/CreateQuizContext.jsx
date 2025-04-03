@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 const initialState = {
+  quizName: "",
   questions: [],
   editingQuestion: null,
 };
