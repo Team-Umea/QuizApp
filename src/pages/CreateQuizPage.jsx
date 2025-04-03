@@ -1,4 +1,3 @@
-import React from "react";
 import QuizList from "../components/create-quiz/QuizList";
 import QuizForm from "../components/create-quiz/QuizForm";
 import { QuestionProvider } from "../context/CreateQuizContext";
