@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 
 const initialState = {
   quizName: "",
+  quizId: null,
   questions: [],
   editingQuestion: null,
 };

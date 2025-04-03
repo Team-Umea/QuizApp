@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import DefaultBtn from "../btn/DefaultBtn";
 import DeleteBtn from "../btn/DeleteBtn";
 import QuizNameForm from "./QuizNameForm";
+import { useMutation } from "@tanstack/react-query";
+import { watchQuiz } from "../../api/api";
 
 const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
 
@@ -39,6 +41,13 @@ export default function QuizForm() {
     handleSubmit,
     reset,
   } = formMethods;
+
+  const watchQuizMutation = useMutation({
+    mutationFn: watchQuiz,
+    onSuccess: (data) => {
+      setQuestionState((prev) => ({ ...prev, quizId: data._id }));
+    },
+  });
 
   const isEditing = questionState.editingQuestion;
 
@@ -115,8 +124,6 @@ export default function QuizForm() {
       return;
     }
 
-    console.log(data);
-
     const hasCorrespondingAnswer = data.options.some(
       (opt, index) => data.answers.find((answer) => answer === index) === index && opt
     );
@@ -131,18 +138,26 @@ export default function QuizForm() {
       return;
     }
 
+    let updatedQuestions = [];
+
     if (isEditing) {
-      const updatedQuestions = questionState.questions.map((question) =>
+      updatedQuestions = questionState.questions.map((question) =>
         question.id === data.id ? data : question
       );
-      setQuestionState((prev) => ({ ...prev, editingQuestion: null, questions: updatedQuestions }));
     } else {
-      const newQuestions = [...questionState.questions, data];
-      setQuestionState((prev) => ({ ...prev, questions: newQuestions }));
+      updatedQuestions = [...questionState.questions, data];
     }
 
+    setQuestionState((prev) => ({ ...prev, questions: updatedQuestions, editingQuestion: null }));
+
+    const { editingQuestion, ...state } = questionState;
+
+    const quizData = { ...state, questions: updatedQuestions };
+
+    watchQuizMutation.mutate(quizData);
+
     reset({
-      id: generateID(questionState.questions),
+      id: generateID(updatedQuestions),
       question: "",
       options: ["", "", "", ""],
       answers: [0],
@@ -157,11 +172,6 @@ export default function QuizForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <h2 className="text-xl font-medium p-4 bg-gray-800 text-gray-200">
-        Start building your perfect quiz by adding engaging questions, customizing answer choices,
-        and setting the correct responses with ease. Whether it’s for fun, learning, or testing
-        knowledge, create an interactive experience that keeps your audience hooked! 🚀
-      </h2> */}
       <QuizNameForm />
       <div className="flex flex-col justify-between w-full h-full p-8 bg-gray-800">
         <div className="flex justify-between">

@@ -1,12 +1,16 @@
-export const AUTHECHO = "http://localhost:3010";
+export const SERVER_URL = "http://localhost:3010";
 
 export const AUTHECHO_ENDPOINTS = {
-  REQUESTCODE: `${AUTHECHO}/authecho/app/requestcode`,
-  VERIFYCODE: `${AUTHECHO}/authecho/app/verifycode`,
-  VALIDATEQUESTION: `${AUTHECHO}/authecho/app/validatequestion`,
-  SIGNIN: `${AUTHECHO}/authecho/app/signin`,
-  AUTHENTICATE: `${AUTHECHO}/authecho/app/authenticate`,
-  SIGNOUT: `${AUTHECHO}/authecho/app/signout`,
-  VERIFYSESSION: `${AUTHECHO}/authecho/app/verifysession`,
-  TRACKACTIVITY: `${AUTHECHO}/authecho/app/activity`,
+  REQUESTCODE: `${SERVER_URL}/authecho/app/requestcode`,
+  VERIFYCODE: `${SERVER_URL}/authecho/app/verifycode`,
+  VALIDATEQUESTION: `${SERVER_URL}/authecho/app/validatequestion`,
+  SIGNIN: `${SERVER_URL}/authecho/app/signin`,
+  AUTHENTICATE: `${SERVER_URL}/authecho/app/authenticate`,
+  SIGNOUT: `${SERVER_URL}/authecho/app/signout`,
+  VERIFYSESSION: `${SERVER_URL}/authecho/app/verifysession`,
+  TRACKACTIVITY: `${SERVER_URL}/authecho/app/activity`,
+};
+
+export const API_ENDPOINTS = {
+  WATCHQUIZ: `${SERVER_URL}/api/watchQuiz`,
 };

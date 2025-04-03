@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
-const { createProxyMiddleware } = require("http-proxy-middleware");
 const path = require("path");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+const ApiRouter = require("./routes/Router.cjs");
 
 require("dotenv").config();
+require("./config/db.cjs");
 
 const PORT = process.env.PORT;
 const APPNAME = process.env.APP_NAME;
@@ -48,6 +50,8 @@ app.use(
     },
   })
 );
+
+app.use("/api", ApiRouter);
 
 if (!isRunningInProd) {
   app.use(
