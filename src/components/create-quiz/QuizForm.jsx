@@ -14,10 +14,13 @@ import DeleteBtn from "../btn/DeleteBtn";
 import QuizNameForm from "./QuizNameForm";
 import { useMutation } from "@tanstack/react-query";
 import { watchQuiz } from "../../api/api";
+import { useNavigate, useParams } from "react-router";
 
 const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
 
 export default function QuizForm() {
+  const navigate = useNavigate();
+  const { quiz } = useParams();
   const { questionState, setQuestionState } = useQuestionContext();
   const { scrollToTopSmooth } = useScrollTo();
   const formMethods = useForm({
@@ -69,13 +72,21 @@ export default function QuizForm() {
     const filteredQuestions = questionState.questions.filter(
       (question) => question.id !== currentId
     );
-    setQuestionState((prev) => ({ ...prev, questions: filteredQuestions, editingQuestion: null }));
+
+    const quizData = { ...questionState, questions: filteredQuestions };
+
+    watchQuizMutation.mutate(quizData);
+
+    updateQuizPath(filteredQuestions);
+
     reset({
       id: generateID(questionState.questions),
       question: "",
       options: ["", "", "", ""],
       answers: [0],
     });
+
+    setQuestionState((prev) => ({ ...prev, questions: filteredQuestions, editingQuestion: null }));
   };
 
   const cancelEdit = () => {
@@ -86,6 +97,15 @@ export default function QuizForm() {
       options: ["", "", "", ""],
       answers: [0],
     });
+  };
+
+  const updateQuizPath = (ques) => {
+    const currentQuizDataPath = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
+    const quizAsPath = encodeURIComponent(
+      JSON.stringify({ ...currentQuizDataPath, questions: ques })
+    );
+    const path = `/admin/createquiz/${quizAsPath}`;
+    navigate(path);
   };
 
   const onSubmit = (data) => {
@@ -162,6 +182,8 @@ export default function QuizForm() {
       options: ["", "", "", ""],
       answers: [0],
     });
+
+    updateQuizPath(updatedQuestions);
   };
 
   const onError = () => {

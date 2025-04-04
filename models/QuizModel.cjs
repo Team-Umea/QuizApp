@@ -16,7 +16,7 @@ const quizQuestionSchema = new Schema(
       required: true,
     },
     answers: {
-      type: [String],
+      type: [Number],
       required: true,
     },
   },

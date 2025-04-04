@@ -10,8 +10,6 @@ const initialState = {
 
 export const fetchQuizes = createAsyncThunk("quizes/fetchQuizes", async () => {
   const response = await axios.get(API_ENDPOINTS.GETQUIZES);
-  console.log(response.data);
-
   return response.data;
 });
 
@@ -27,8 +25,6 @@ const quizSlice = createSlice({
       .addCase(fetchQuizes.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-
-        // console.log("Quis: ", action.payload.quizes);
 
         state.quizes = action.payload.quizes;
       })

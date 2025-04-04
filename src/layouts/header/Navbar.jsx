@@ -4,6 +4,7 @@ import { IoLogInOutline, IoLogOutOutline } from "react-icons/io5";
 import { RiAdminLine } from "react-icons/ri";
 import useAuthStore from "../../hooks/useAuthStore";
 import { signOut } from "../../api/authecho";
+import OutlineBtn from "../../components/btn/OutlineBtn";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -14,17 +15,17 @@ export default function Navbar() {
   const signInButtonBody =
     !isAdminPage && isAdmin && isAuthenticated ? (
       <>
-        <span className="text-lg">Admin</span>
+        <span className="text-lg whitespace-nowrap">Admin</span>
         <RiAdminLine size={24} />
       </>
     ) : isAuthenticated ? (
       <>
-        <span className="text-lg">Logga ut</span>
+        <span className="text-lg whitespace-nowrap">Sign out</span>
         <IoLogOutOutline size={24} />
       </>
     ) : (
       <>
-        <span className="text-lg">Logga in</span>
+        <span className="text-lg whitespace-nowrap">Sign in</span>
         <IoLogInOutline size={24} />
       </>
     );
@@ -49,7 +50,12 @@ export default function Navbar() {
       <NavLink to="/" className="text-xl">
         Quiz App
       </NavLink>
-      <div>
+      <div className="flex gap-x-4 w-fit">
+        {isAdmin && (
+          <OutlineBtn onClick={() => navigate("/admin")}>
+            <span>My quizzes</span>
+          </OutlineBtn>
+        )}
         <PrimaryBtn onClick={handleAuthAction}>{signInButtonBody}</PrimaryBtn>
       </div>
     </nav>

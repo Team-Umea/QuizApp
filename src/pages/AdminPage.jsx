@@ -21,9 +21,11 @@ export default function AdminPage() {
 
   return (
     <div>
-      <OutlineBtn onClick={() => navigate("createquiz")} fullWidth={false}>
-        <span className="font-bold">Create Quiz</span>
-      </OutlineBtn>
+      <div className="px-4 py-6">
+        <OutlineBtn onClick={() => navigate("createquiz")} fullWidth={false}>
+          <span className="font-bold">Create Quiz</span>
+        </OutlineBtn>
+      </div>
       <QuizList />
     </div>
   );

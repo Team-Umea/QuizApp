@@ -12,6 +12,7 @@ export const AUTHECHO_ENDPOINTS = {
 };
 
 export const API_ENDPOINTS = {
+  QUIZ: `${SERVER_URL}/api/quiz`,
   WATCHQUIZ: `${SERVER_URL}/api/watchquiz`,
   GETQUIZES: `${SERVER_URL}/api/quizes`,
 };

@@ -1,9 +1,31 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import QuizCard from "./QuizCard";
 import { useQuestionContext } from "../../context/CreateQuizContext";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { watchQuiz } from "../../api/api";
 
 export default function QuizList() {
+  const navigate = useNavigate();
+  const { quiz } = useParams();
   const { questionState, setQuestionState } = useQuestionContext();
+
+  useEffect(() => {
+    const quizData = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
+    if (quizData) {
+      setQuestionState((prev) => ({
+        ...prev,
+        questions: quizData.questions,
+        quizId: quizData._id,
+        quizName: quizData.quizName,
+      }));
+    }
+  }, []);
+
+  const watchQuizMutation = useMutation({
+    mutationFn: watchQuiz,
+  });
 
   const questions = questionState.questions;
 
@@ -15,6 +37,15 @@ export default function QuizList() {
     reorderedQuestions.splice(result.destination.index, 0, movedItem);
 
     setQuestionState((prev) => ({ ...prev, questions: reorderedQuestions }));
+
+    watchQuizMutation.mutate({ ...questionState, questions: reorderedQuestions });
+
+    const currentQuizDataPath = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
+    const quizAsPath = encodeURIComponent(
+      JSON.stringify({ ...currentQuizDataPath, questions: reorderedQuestions })
+    );
+    const path = `/admin/createquiz/${quizAsPath}`;
+    navigate(path);
   };
 
   const hasQuestions = questions && questions.length > 0;

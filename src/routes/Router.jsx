@@ -28,7 +28,7 @@ const router = createBrowserRouter(
             <AdminPage />
           </ProtectedAdminRoute>
         }>
-        <Route path="createquiz" element={<CreateQuizPage />} />
+        <Route path="createquiz/:quiz?" element={<CreateQuizPage />} />
       </Route>
       <Route
         path="/user"

@@ -40,4 +40,17 @@ const getQuizes = async (req, res) => {
   }
 };
 
-module.exports = { watchQuiz, getQuizes };
+const deleteQuiz = async (req, res) => {
+  const { quizid: quizId } = req.params;
+
+  try {
+    await QuizModel.deleteOne({ _id: quizId });
+
+    res.status(200).json({ message: `Quiz with id ${quizId} deleted successfully`, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Interal server error", success: false });
+  }
+};
+
+module.exports = { watchQuiz, getQuizes, deleteQuiz };
