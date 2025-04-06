@@ -29,6 +29,12 @@ const quizSchema = new Schema({
     type: [quizQuestionSchema],
     required: true,
   },
+  code: {
+    type: String,
+  },
+  isRunning: {
+    type: Boolean,
+  },
 });
 
 const quizModel = mongoose.model("quizes", quizSchema);

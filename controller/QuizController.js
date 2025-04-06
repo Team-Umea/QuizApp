@@ -8,6 +8,10 @@ const runQuiz = async (req, res) => {
 
     const code = "123212";
 
+    quiz.isRunning = true;
+    quiz.code = code;
+    await quiz.save();
+
     res.status(200).json({ quiz, code, message: "Quiz is running", success: true });
   } catch (error) {
     console.error(error);
@@ -20,6 +24,10 @@ const cancelQuiz = async (req, res) => {
 
   try {
     const quiz = await QuizModel.findById(quizId);
+
+    quiz.isRunning = false;
+    quiz.code = null;
+    await quiz.save();
 
     res
       .status(200)
