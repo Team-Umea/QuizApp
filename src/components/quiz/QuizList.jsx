@@ -1,63 +1,59 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useQuizStore from "../../hooks/useQuizStore";
 import Loader from "../ui/Loader";
-import DefaultBtn from "../btn/DefaultBtn";
-import { FaRegEdit } from "react-icons/fa";
-import DeleteBtn from "../btn/DeleteBtn";
+import QuizCard from "./QuizCard";
+import Modal from "../ui/Modal";
 import { useMutation } from "@tanstack/react-query";
-import { deleteQuiz } from "../../api/api";
-import { useNavigate } from "react-router";
+import { cancelQuiz, runQuiz } from "../../api/quiz";
+import Toast from "../ui/Toast";
 
 export default function QuizList() {
-  const navigate = useNavigate();
   const { quizes, loading } = useQuizStore();
-  const { fetchQuizes } = useQuizStore();
+  const [modalBody, setModalBody] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
 
-  const deleteQuizMutation = useMutation({
-    mutationFn: deleteQuiz,
-    onSettled: () => {
-      fetchQuizes();
-    },
-  });
-
-  const navigateToEditQuiz = (quiz) => {
-    const quizAsPath = encodeURIComponent(JSON.stringify(quiz));
-    const path = `createquiz/${quizAsPath}`;
-    navigate(path);
+  const onRunQuiz = (modal) => {
+    setModalBody(modal);
   };
+
+  const onCancelQuiz = (message) => {
+    setToastMessage(message);
+    setModalBody(null);
+  };
+
+  const hasQuizes = quizes && quizes.length > 0;
 
   if (loading) {
     return <Loader />;
   }
 
-  const hasQuizes = quizes && quizes.length > 0;
-
   return (
-    <div className="px-4 my-18">
-      <h2 className="text-2xl font-semibold">
-        {hasQuizes ? (
-          <span>Your quizzes</span>
-        ) : (
-          <span className="text-red-500">No quizzes added</span>
-        )}
-      </h2>
-      <ul className="flex flex-col gap-y-8 p-8">
-        {quizes.map((quiz) => {
-          return (
-            <li
-              key={quiz._id}
-              className="flex flex-col md:flex-row justify-between gap-y-4 p-8 rounded-lg bg-slate-700">
-              <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
-              <div className="flex items-center gap-x-2 md:gap-x-6">
-                <DefaultBtn onClick={() => navigateToEditQuiz(quiz)}>
-                  <FaRegEdit size={24} />
-                </DefaultBtn>
-                <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <>
+      <div className="px-4 my-18">
+        <h2 className="text-2xl font-semibold">
+          {hasQuizes ? (
+            <span>Your quizzes</span>
+          ) : (
+            <span className="text-red-500">No quizzes added</span>
+          )}
+        </h2>
+        <ul className="flex flex-col gap-y-8 p-8">
+          {quizes.map((quiz) => {
+            return (
+              <QuizCard
+                key={quiz._id}
+                quiz={quiz}
+                onRunQuiz={onRunQuiz}
+                onCancelQuiz={onCancelQuiz}
+              />
+            );
+          })}
+        </ul>
+      </div>
+      <Modal show={!!modalBody} onClose={() => setModalBody(null)}>
+        {modalBody}
+      </Modal>
+      <Toast show={!!toastMessage} message={toastMessage} onClose={() => setToastMessage("")} />
+    </>
   );
 }

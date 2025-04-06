@@ -15,7 +15,7 @@ export default function UserForm() {
         defaultValue=""
         render={({ field }) => (
           <FormInput
-            label="Användarnamn eller mejladress"
+            label="Username or email"
             value={field.value}
             errorMessage={errors?.user?.user?.message}
             autoFocus={true}

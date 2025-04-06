@@ -15,7 +15,7 @@ export default function PasswordForm() {
         defaultValue=""
         render={({ field }) => (
           <FormInput
-            label="Lösenord"
+            label="Password"
             type="password"
             value={field.value}
             errorMessage={errors?.password?.password?.message}

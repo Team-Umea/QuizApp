@@ -11,9 +11,9 @@ export default function SecurityQuestionForm({ securityQuestion }) {
     <div className="flex flex-col my-8 w-full">
       <div className="space-y-2">
         <p className="text-red-700 font-semibold">
-          Svara på din säkerhetsfråga eftersom verifieringskoden som angivits är felaktig
+          Answer your security question because the verification code provided is incorrect.
         </p>
-        <p className="text-gray-700 font-semibold">{securityQuestion}</p>
+        <p className="text-gray-300 font-semibold">{securityQuestion}</p>
       </div>
       <Controller
         name="questionAnswer.questionAnswer"
@@ -21,7 +21,7 @@ export default function SecurityQuestionForm({ securityQuestion }) {
         defaultValue=""
         render={({ field }) => (
           <FormInput
-            label="Säkerhetsfråga"
+            label="Security question"
             type="password"
             value={field.value}
             errorMessage={errors?.questionAnswer?.questionAnswer?.message}

@@ -1,0 +1,91 @@
+import React, { useState } from "react";
+import DefaultBtn from "../btn/DefaultBtn";
+import { FaRegEdit } from "react-icons/fa";
+import DeleteBtn from "../btn/DeleteBtn";
+import StatusBtn from "../btn/StatusBtn";
+import { useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { deleteQuiz } from "../../api/api";
+import useQuizStore from "../../hooks/useQuizStore";
+import { cancelQuiz, runQuiz } from "../../api/quiz";
+
+export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
+  const navigate = useNavigate();
+  const { fetchQuizes } = useQuizStore();
+  const [isLive, setIsLive] = useState(false);
+  const [quizCode, setQuizCode] = useState(null);
+
+  const deleteQuizMutation = useMutation({
+    mutationFn: deleteQuiz,
+    onSettled: () => {
+      fetchQuizes();
+    },
+  });
+
+  const runQuizMutation = useMutation({
+    mutationFn: runQuiz,
+    onSuccess: (data) => {
+      const code = data.data.code;
+      const quizName = data.data.quiz.quizName;
+
+      setQuizCode(code);
+
+      const modalBody = (
+        <div className="flex flex-col gap-y-8 mt-4">
+          <h2 className="text-2xl font-medium text-green-500 break-words">
+            Quiz <span className="italic">{quizName}</span> started successfully
+          </h2>
+          <p className="text-lg text-gray-400">Share this code to allow user to play your quiz</p>
+          <p className="text-xl font-semibold">{code}</p>
+        </div>
+      );
+
+      onRunQuiz(modalBody);
+    },
+  });
+
+  const cancelQuizMutation = useMutation({
+    mutationFn: cancelQuiz,
+    onSuccess: (data) => {
+      const toastMessage = data.data.message;
+      setQuizCode(null);
+      onCancelQuiz(toastMessage);
+    },
+  });
+
+  const toggleQuizStatus = () => {
+    if (isLive) {
+      cancelQuizMutation.mutate(quiz._id);
+    } else {
+      runQuizMutation.mutate(quiz._id);
+    }
+
+    setIsLive((prev) => !prev);
+  };
+
+  const navigateToEditQuiz = () => {
+    const quizAsPath = encodeURIComponent(JSON.stringify(quiz));
+    const path = `createquiz/${quizAsPath}`;
+    navigate(path);
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row items-center justify-between gap-y-4 p-8 rounded-lg bg-slate-700">
+      <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
+      <div className="flex gap-x-22">
+        <div className="flex items-center gap-x-10">
+          {quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>}
+          <StatusBtn onClick={toggleQuizStatus} statusColor={isLive ? "#e01010" : "#09b537"}>
+            <span className="font-medium">{isLive ? "Cancel quiz" : "Run quiz"}</span>
+          </StatusBtn>
+        </div>
+        <div className="flex items-center gap-x-2 md:gap-x-6">
+          <DefaultBtn onClick={navigateToEditQuiz}>
+            <FaRegEdit size={24} />
+          </DefaultBtn>
+          <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
+        </div>
+      </div>
+    </div>
+  );
+}

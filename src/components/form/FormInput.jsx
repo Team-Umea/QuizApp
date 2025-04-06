@@ -59,7 +59,7 @@ export default function FormInput({
           errorMessage ? "border-red-500!" : "border-transparent"
         }`}>
         <div className="flex items-center gap-x-2">
-          <label className="text-lg text-slate-600 font-medium">{label}</label>
+          <label className="text-lg text-slate-400 font-medium">{label}</label>
           {isRequired && <span className="text-2xl text-red-500! font-bold">*</span>}
         </div>
 

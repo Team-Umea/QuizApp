@@ -9,8 +9,8 @@ export default function VerificationCodeForm() {
 
   return (
     <div className="flex flex-col my-8 w-full">
-      <p className="pl-4 text-lg text-gray-500 font-medium">
-        En verifieringskod har skickats till din e-postadress
+      <p className="pl-4 text-lg text-gray-300 font-medium">
+        A verification code has been sent to your email address.
       </p>
       <Controller
         name="verificationCode.verificationCode"
@@ -18,7 +18,7 @@ export default function VerificationCodeForm() {
         defaultValue=""
         render={({ field }) => (
           <FormInput
-            label="Verifieringskod"
+            label="Verification code"
             type="password"
             value={field.value}
             errorMessage={errors?.verificationCode?.verificationCode?.message}
