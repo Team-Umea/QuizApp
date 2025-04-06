@@ -4,10 +4,16 @@ import { quizNameSchema } from "../../validations/quizName";
 import OutlineBtn from "../btn/OutlineBtn";
 import FormInputBox from "../form/FormInputBox";
 import { useQuestionContext } from "../../context/CreateQuizContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Toast from "../ui/Toast";
+import { useParams } from "react-router";
+import useQuizStore from "../../hooks/useQuizStore";
+import { useMutation } from "@tanstack/react-query";
+import { watchQuiz } from "../../api/api";
 
 export default function QuizNameForm() {
+  const { quiz } = useParams();
+  const { newQuizName, quizes } = useQuizStore();
   const { questionState, setQuestionState } = useQuestionContext();
   const [formMessage, setFormMessage] = useState("");
   const quizName = questionState.quizName;
@@ -17,15 +23,43 @@ export default function QuizNameForm() {
       quizName: "",
     },
   });
-
   const {
     control,
+    setError,
     formState: { errors },
     handleSubmit,
     reset,
   } = formMethods;
 
+  const isNewQuiz = !quiz;
+
+  useEffect(() => {
+    if (isNewQuiz) {
+      setQuestionState((prev) => ({ ...prev, quizName: newQuizName }));
+    }
+  }, []);
+
+  const watchQuizMutation = useMutation({
+    mutationFn: watchQuiz,
+  });
+
   const onSubmit = (data) => {
+    const isDuplicateQuizName = quizes.some(
+      (q) => q.quizName.trim().toLowerCase() === data.quizName.trim().toLowerCase()
+    );
+
+    if (isDuplicateQuizName) {
+      setError("quizName", {
+        type: "manual",
+        message: "Quiz name must be unique",
+      });
+      return;
+    }
+
+    const quizData = { ...questionState, quizName: data.quizName };
+
+    watchQuizMutation.mutate(quizData);
+
     setQuestionState((prev) => ({ ...prev, quizName: data.quizName }));
 
     setFormMessage("Quiz name updated successfully");

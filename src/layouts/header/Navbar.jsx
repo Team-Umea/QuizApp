@@ -51,7 +51,7 @@ export default function Navbar() {
         Quiz App
       </NavLink>
       <div className="flex gap-x-4 w-fit">
-        {isAdmin && (
+        {isAdmin && isAdminPage && (
           <OutlineBtn onClick={() => navigate("/admin")}>
             <span>My quizzes</span>
           </OutlineBtn>

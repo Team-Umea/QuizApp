@@ -33,3 +33,19 @@ export function generateID(array) {
   }
   return String(Math.max(...array.map((item) => parseInt(item.id))) + 1);
 }
+
+export function generateQuizName(quizes = []) {
+  const suffixes = quizes
+    .filter((quiz) => quiz.quizName.trim().toLowerCase().startsWith("quiz"))
+    .map((quiz) => {
+      const suffix = quiz.quizName.replace(/^\D+/g, "");
+      return suffix ? parseInt(suffix) : 0;
+    });
+
+  let suffix = 1;
+  while (suffixes.includes(suffix)) {
+    suffix++;
+  }
+
+  return `Quiz${suffix}`;
+}

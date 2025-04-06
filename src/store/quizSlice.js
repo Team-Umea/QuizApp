@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_ENDPOINTS } from "../api/endpoints";
+import { generateQuizName } from "../utils/helpers";
 
 const initialState = {
   quizes: [],
+  newQuizName: "",
   loading: true,
   error: null,
 };
@@ -23,10 +25,12 @@ const quizSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchQuizes.fulfilled, (state, action) => {
+        const quizes = action.payload.quizes;
         state.loading = false;
         state.error = null;
 
-        state.quizes = action.payload.quizes;
+        state.quizes = quizes;
+        state.newQuizName = generateQuizName(quizes);
       })
       .addCase(fetchQuizes.rejected, (state, action) => {
         state.loading = false;

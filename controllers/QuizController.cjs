@@ -1,9 +1,8 @@
-const { default: quizModel } = require("../models/QuizModel.cjs");
 const QuizModel = require("../models/QuizModel.cjs");
 
 const watchQuiz = async (req, res) => {
   const userId = req.user._id;
-  const quizData = { ...req.body, quizName: "My first quiz", user: userId };
+  const quizData = { ...req.body, user: userId };
 
   try {
     const existingQuiz = await QuizModel.findOne({ _id: quizData.quizId });
