@@ -1,8 +1,7 @@
 const router = require("express").Router();
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
+const { runQuiz, cancelQuiz } = require("../controller/QuizController");
 
-router.use(cookieParser());
-router.use(bodyParser.json());
+router.post("/runquiz/:quizid", runQuiz);
+router.post("/cancelquiz/:quizid", cancelQuiz);
 
 module.exports = router;

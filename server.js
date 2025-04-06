@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const Router = require("./routes/Router");
+const { ensureAuthenticated, ensureAdmin } = require("./middlewares/auth");
 
 require("dotenv").config();
 require("./config/db");
@@ -16,6 +19,8 @@ const openCors = cors({
 });
 
 app.use(openCors);
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use(Router);
 
