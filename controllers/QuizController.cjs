@@ -17,9 +17,25 @@ const watchQuiz = async (req, res) => {
         .json({ quiz: newQuiz, message: "Quiz created successfully", success: true });
     }
 
-    const quiz = await QuizModel.findOneAndUpdate({ _id: quizData.quizId }, { ...cleanedQuizData });
+    const quizToUpdate = await QuizModel.findOne({ _id: quizData.quizId });
 
-    res.status(200).json({ quiz, message: "Quiz updated successfully", success: true });
+    if (!quizToUpdate) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    if (quizToUpdate.isRunning) {
+      return res
+        .status(400)
+        .json({ message: "Cannot update quiz that is running", success: false });
+    }
+
+    const updatedQuiz = await QuizModel.findOneAndUpdate({ _id: quizId }, cleanedQuizData, {
+      new: true,
+    });
+
+    res
+      .status(200)
+      .json({ quiz: updatedQuiz, message: "Quiz updated successfully", success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Interal server error", success: false });
@@ -43,6 +59,14 @@ const deleteQuiz = async (req, res) => {
   const { quizid: quizId } = req.params;
 
   try {
+    const quizToDelete = await QuizModel.findById(quizId);
+
+    if (quizToDelete.isRunning) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete quiz that is running", success: false });
+    }
+
     await QuizModel.deleteOne({ _id: quizId });
 
     res.status(200).json({ message: `Quiz with id ${quizId} deleted successfully`, success: true });

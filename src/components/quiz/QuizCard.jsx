@@ -12,8 +12,8 @@ import { cancelQuiz, runQuiz } from "../../api/quiz";
 export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   const navigate = useNavigate();
   const { fetchQuizes } = useQuizStore();
-  const [isLive, setIsLive] = useState(false);
-  const [quizCode, setQuizCode] = useState(null);
+  const [isRunning, setIsRunning] = useState(quiz.isRunning ? quiz.isRunning : false);
+  const [quizCode, setQuizCode] = useState(quiz.code ? quiz.code : null);
 
   const deleteQuizMutation = useMutation({
     mutationFn: deleteQuiz,
@@ -54,13 +54,13 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   });
 
   const toggleQuizStatus = () => {
-    if (isLive) {
+    if (isRunning) {
       cancelQuizMutation.mutate(quiz._id);
     } else {
       runQuizMutation.mutate(quiz._id);
     }
 
-    setIsLive((prev) => !prev);
+    setIsRunning((prev) => !prev);
   };
 
   const navigateToEditQuiz = () => {
@@ -75,16 +75,18 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
       <div className="flex gap-x-22">
         <div className="flex items-center gap-x-10">
           {quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>}
-          <StatusBtn onClick={toggleQuizStatus} statusColor={isLive ? "#e01010" : "#09b537"}>
-            <span className="font-medium">{isLive ? "Cancel quiz" : "Run quiz"}</span>
+          <StatusBtn onClick={toggleQuizStatus} statusColor={isRunning ? "#e01010" : "#09b537"}>
+            <span className="font-medium">{isRunning ? "Cancel quiz" : "Run quiz"}</span>
           </StatusBtn>
         </div>
-        <div className="flex items-center gap-x-2 md:gap-x-6">
-          <DefaultBtn onClick={navigateToEditQuiz}>
-            <FaRegEdit size={24} />
-          </DefaultBtn>
-          <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
-        </div>
+        {!isRunning && (
+          <div className="flex items-center gap-x-2 md:gap-x-6">
+            <DefaultBtn onClick={navigateToEditQuiz}>
+              <FaRegEdit size={24} />
+            </DefaultBtn>
+            <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
+          </div>
+        )}
       </div>
     </div>
   );
