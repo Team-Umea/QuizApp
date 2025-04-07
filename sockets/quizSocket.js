@@ -1,4 +1,5 @@
 const WebSocket = require("ws");
+const { generateUserId } = require("../utils/helpers");
 
 const quizSocket = (server) => {
   const wss = new WebSocket.Server({ server });
@@ -8,24 +9,64 @@ const quizSocket = (server) => {
   wss.on("connection", (ws) => {
     console.log("Client connected");
 
+    ws._userId = generateUserId();
+
     ws.on("message", (message) => {
       console.log(`Received message: ${message}`);
-      const parsedMessage = JSON.parse(message);
 
-      if (parsedMessage.type === "JOIN_QUIZ" && parsedMessage.quizId) {
-        const quizId = parsedMessage.quizId;
+      let parsedMessage;
+      try {
+        parsedMessage = JSON.parse(message);
+      } catch (error) {
+        ws.send(JSON.stringify({ type: "ERROR", message: "Server error" }));
+        console.error("Failed to parse message:", error);
+        return;
+      }
+
+      if (parsedMessage.type === "JOIN_QUIZ" && parsedMessage.code) {
+        const quizCode = parsedMessage.code;
+
+        const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
+
+        if (!quiz) {
+          console.log(`Quiz not found for code: ${quizCode}`);
+          ws.send(JSON.stringify({ type: "ERROR", message: "Quiz not found" }));
+          return;
+        }
+
+        const quizId = quiz._id;
+
         if (!quizClients[quizId]) {
           quizClients[quizId] = [];
         }
-        quizClients[quizId].push(ws);
+
+        quizClients[quizId].push({ ws, hasAnswered: false });
         console.log(`Client joined quiz: ${quizId}`);
+        broadCastCurrentQuestion(quizId, liveQuizes[quizId].questions[0]);
+      }
+
+      if (parsedMessage.type === "ANSWER_QUESTION" && parsedMessage.code) {
+        const { answer } = parsedMessage;
+        const quizCode = parsedMessage.code;
+
+        const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
+
+        if (!quiz) {
+          console.log(`Quiz not found for code: ${quizCode}`);
+          ws.send(JSON.stringify({ type: "ERROR", message: "Quiz not found" }));
+          return;
+        }
+
+        const quizId = quiz._id;
+
+        handleAnswer(ws, quizId, answer);
       }
     });
 
-    ws.on("cliose", () => {
+    ws.on("close", () => {
       console.log("Client disconnected");
       for (const quizId in quizClients) {
-        quizClients[quizId] = quizClients[quizId].filter((client) => client !== ws);
+        quizClients[quizId] = quizClients[quizId].filter((client) => client.ws !== ws);
       }
     });
   });
@@ -41,17 +82,15 @@ const quizSocket = (server) => {
 
     const clients = quizClients[quizId] || [];
 
-    console.log("Clients: ", clients);
-
-    clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
+    clients.forEach(({ ws }) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
       }
     });
   };
 
   const addQuiz = (quizId, quizData) => {
-    liveQuizes[quizId] = { ...quizData, currentQuizIndex: 0 };
+    liveQuizes[quizId] = { ...quizData, currentQuizIndex: 0, scores: {} };
 
     const currentQuestion = liveQuizes[quizId].questions[liveQuizes[quizId].currentQuizIndex];
 
@@ -60,11 +99,65 @@ const quizSocket = (server) => {
 
   const deleteQuiz = (quizId) => {
     delete liveQuizes[quizId];
-    console.log(`Quiz deleted: ${quizId}`);
   };
 
   const getLiveQuizes = () => {
     return liveQuizes;
+  };
+
+  const handleAnswer = (ws, quizId, answer) => {
+    const quiz = liveQuizes[quizId];
+    if (!quiz) {
+      console.log(`Quiz not found: ${quizId}`);
+      return;
+    }
+
+    const currentQuestion = quiz.questions[quiz.currentQuizIndex];
+
+    const isRightAnswer = currentQuestion.answers.some((ans) => ans === parseInt(answer));
+
+    if (currentQuestion && isRightAnswer) {
+      const userId = ws._userId;
+      if (!quiz.scores[userId]) {
+        quiz.scores[userId] = 0;
+      }
+      quiz.scores[userId] += 10;
+      console.log(`User ${userId} answered correctly! Current score: ${quiz.scores[userId]}`);
+
+      ws.send(JSON.stringify({ type: "SCORE_UPDATE", score: quiz.scores[userId] }));
+    } else {
+      console.log(`User answered incorrectly: ${answer}`);
+    }
+
+    const clientEntry = quizClients[quizId].find((client) => client.ws === ws);
+    if (clientEntry) {
+      clientEntry.hasAnswered = true;
+    }
+
+    const allAnswered = quizClients[quizId].every((client) => client.hasAnswered);
+    if (allAnswered) {
+      console.log(`All clients have answered for quiz: ${quizId}`);
+      updateCurrentQuestion(quizId);
+    }
+  };
+
+  const updateCurrentQuestion = (quizId) => {
+    const quiz = liveQuizes[quizId];
+    if (quiz) {
+      quiz.currentQuizIndex++;
+      quizClients[quizId].forEach((client) => {
+        client.hasAnswered = false;
+      });
+
+      if (quiz.currentQuizIndex < quiz.questions.length) {
+        const currentQuestion = quiz.questions[quiz.currentQuizIndex];
+        broadCastCurrentQuestion(quizId, currentQuestion);
+      } else {
+        console.log(`Quiz ${quizId} has ended.`);
+        deleteQuiz(quizId);
+        // Handle end of quiz logic (e.g., broadcasting results)
+      }
+    }
   };
 
   return {
