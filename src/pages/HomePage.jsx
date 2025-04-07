@@ -1,6 +1,10 @@
 import React from "react";
-import Quiz from "../components/play-quiz/Quiz";
+import JoinQuizForm from "../components/play-quiz/JoinQuizForm";
 
 export default function HomePage() {
-  return <Quiz />;
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <JoinQuizForm />
+    </div>
+  );
 }
