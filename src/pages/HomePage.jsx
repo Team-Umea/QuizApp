@@ -1,5 +1,6 @@
 import React from "react";
+import Quiz from "../components/play-quiz/Quiz";
 
 export default function HomePage() {
-  return <div>Hello quiz</div>;
+  return <Quiz />;
 }

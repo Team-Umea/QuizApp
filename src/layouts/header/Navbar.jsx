@@ -50,6 +50,9 @@ export default function Navbar() {
       <NavLink to="/" className="text-xl">
         Quiz App
       </NavLink>
+      <NavLink to="/" className="">
+        Play quiz
+      </NavLink>
       <div className="flex gap-x-4 w-fit">
         {isAdmin && isAdminPage && (
           <OutlineBtn onClick={() => navigate("/admin")}>
