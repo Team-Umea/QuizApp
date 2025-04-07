@@ -78,15 +78,19 @@ const deleteQuiz = async (req, res) => {
 
 const runQuiz = async (req, res) => {
   const { quizid: quizId } = req.params;
+  const quizManager = req.quizManager;
 
   try {
-    const quiz = await QuizModel.findById(quizId);
-
+    // const quiz = await QuizModel.findById(quizId);
     const code = "123212";
 
-    quiz.isRunning = true;
-    quiz.code = code;
-    await quiz.save();
+    const quiz = await QuizModel.findByIdAndUpdate(quizId, { isRunning: true, code: code }).lean();
+
+    // quiz.isRunning = true;
+    // quiz.code = code;
+    // await quiz.save();
+
+    quizManager.addQuiz(quizId, quiz);
 
     res.status(200).json({ quiz, code, message: "Quiz is running", success: true });
   } catch (error) {
@@ -97,6 +101,7 @@ const runQuiz = async (req, res) => {
 
 const cancelQuiz = async (req, res) => {
   const { quizid: quizId } = req.params;
+  const quizManager = req.quizManager;
 
   try {
     const quiz = await QuizModel.findById(quizId);
@@ -104,6 +109,8 @@ const cancelQuiz = async (req, res) => {
     quiz.isRunning = false;
     quiz.code = null;
     await quiz.save();
+
+    quizManager.deleteQuiz(quizId);
 
     res
       .status(200)
