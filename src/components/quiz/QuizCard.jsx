@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { deleteQuiz } from "../../api/api";
 import useQuizStore from "../../hooks/useQuizStore";
-import { cancelQuiz, runQuiz } from "../../api/quiz";
+import { cancelQuiz, runQuiz } from "../../api/api";
 
 export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   const navigate = useNavigate();

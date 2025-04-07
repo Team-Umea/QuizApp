@@ -18,8 +18,16 @@ const initialState = {
 
 export const verifySession = createAsyncThunk("session/verifySession", async () => {
   const [sessionResponse, activityResponse] = await Promise.allSettled([
-    axios.get(AUTHECHO_ENDPOINTS.VERIFYSESSION),
-    axios.put(AUTHECHO_ENDPOINTS.TRACKACTIVITY),
+    axios.get(AUTHECHO_ENDPOINTS.VERIFYSESSION, {
+      withCredentials: true,
+    }),
+    axios.put(
+      AUTHECHO_ENDPOINTS.TRACKACTIVITY,
+      {},
+      {
+        withCredentials: true,
+      }
+    ),
   ]);
 
   return {

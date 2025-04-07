@@ -11,7 +11,9 @@ const initialState = {
 };
 
 export const fetchQuizes = createAsyncThunk("quizes/fetchQuizes", async () => {
-  const response = await axios.get(API_ENDPOINTS.GETQUIZES);
+  const response = await axios.get(API_ENDPOINTS.GETQUIZES, {
+    withCredentials: true,
+  });
   return response.data;
 });
 
@@ -34,6 +36,8 @@ const quizSlice = createSlice({
       })
       .addCase(fetchQuizes.rejected, (state, action) => {
         state.loading = false;
+        console.log(action.error);
+
         state.error = action.error.message || "Failed to fetch quizes";
       });
   },

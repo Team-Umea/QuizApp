@@ -4,7 +4,9 @@ import { AUTHECHO_ENDPOINTS } from "./endpoints";
 export const requestVerificationCode = async ({ user }) => {
   const data = { user };
   try {
-    return await axios.post(AUTHECHO_ENDPOINTS.REQUESTCODE, data);
+    return await axios.post(AUTHECHO_ENDPOINTS.REQUESTCODE, data, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.log(error);
 
@@ -24,7 +26,9 @@ export const verifyVerificationCode = async ({ user, verificationCode }) => {
   const data = { user, verificationCode };
 
   try {
-    const response = await axios.post(AUTHECHO_ENDPOINTS.VERIFYCODE, data);
+    const response = await axios.post(AUTHECHO_ENDPOINTS.VERIFYCODE, data, {
+      withCredentials: true,
+    });
 
     if (!response.data.success) {
       throw new Error("Ogiltig kod");
@@ -47,7 +51,9 @@ export const verifyVerificationCode = async ({ user, verificationCode }) => {
 export const validateSecurityQuestion = async ({ user, questionAnswer }) => {
   const data = { user, questionAnswer };
   try {
-    return await axios.post(AUTHECHO_ENDPOINTS.VALIDATEQUESTION, data);
+    return await axios.post(AUTHECHO_ENDPOINTS.VALIDATEQUESTION, data, {
+      withCredentials: true,
+    });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -65,7 +71,9 @@ export const signIn = async ({ user, verificationCode, password, rememberUser })
   const data = { user, verificationCode, password, rememberUser };
 
   try {
-    return await axios.post(AUTHECHO_ENDPOINTS.SIGNIN, data);
+    return await axios.post(AUTHECHO_ENDPOINTS.SIGNIN, data, {
+      withCredentials: true,
+    });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data.message || "Ett fel inträffade vid inloggning.");
@@ -79,11 +87,10 @@ export const signIn = async ({ user, verificationCode, password, rememberUser })
 
 export const signOut = async () => {
   try {
-    const res = await axios.get(AUTHECHO_ENDPOINTS.SIGNOUT);
-    console.log(res);
+    return await axios.get(AUTHECHO_ENDPOINTS.SIGNOUT, {
+      withCredentials: true,
+    });
   } catch (error) {
-    console.log("Error: ", err);
-
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data.message || "Ett fel inträffade vid utloggning.");
     } else if (error instanceof Error) {

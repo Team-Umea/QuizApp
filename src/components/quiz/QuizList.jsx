@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import useQuizStore from "../../hooks/useQuizStore";
 import Loader from "../ui/Loader";
 import QuizCard from "./QuizCard";
 import Modal from "../ui/Modal";
-import { useMutation } from "@tanstack/react-query";
-import { cancelQuiz, runQuiz } from "../../api/quiz";
 import Toast from "../ui/Toast";
 
 export default function QuizList() {
