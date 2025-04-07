@@ -7,8 +7,6 @@ const JWT_KEY = process.env.JWT_APP_TOKEN_KEY;
 const ensureAuthenticated = (req, res, next) => {
   const JWT_TOKEN = req.cookies[JWT_KEY];
 
-  console.log("Cookies: ", req.cookies);
-
   try {
     const decoded = jwt.verify(JWT_TOKEN, JWT_SECRET);
 
@@ -27,7 +25,7 @@ const ensureAuthenticated = (req, res, next) => {
     }
 
     console.error(error);
-    res.status(500).json({ message: "Server error", success: false });
+    res.status(500).json({ message: "Internal server error", success: false });
   }
 };
 
@@ -58,7 +56,7 @@ const ensureAdmin = (req, res, next) => {
     }
 
     console.error(error);
-    res.status(500).json({ message: "Server error", success: false });
+    res.status(500).json({ message: "Interal server error", success: false });
   }
 };
 
