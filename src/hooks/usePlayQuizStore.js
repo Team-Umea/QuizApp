@@ -8,6 +8,7 @@ import {
   setCurrentQuestion,
   setError,
   setQuizName,
+  setQuizState,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -71,6 +72,13 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const updateQuizState = useCallback(
+    (quizState) => {
+      dispatch(setQuizState(quizState));
+    },
+    [dispatch]
+  );
+
   const updateError = useCallback(
     (error) => {
       dispatch(setError(error));
@@ -88,6 +96,7 @@ const usePlayQuizStore = () => {
     updateScore,
     updateCurrentQuestion,
     updateQuizName,
+    updateQuizState,
     updateError,
   };
 };

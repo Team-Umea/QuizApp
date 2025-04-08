@@ -14,7 +14,7 @@ export default function PlayQuizForm({ options }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <ul className="grid grid-cols-1fr md:grid-cols-[1fr_1fr] gap-8 p-8 mt-32">
+      <ul className="grid grid-cols-1fr md:grid-cols-[1fr_1fr] gap-8 p-8 md:mt-32">
         {options.map((option, index) => {
           return (
             <li key={index}>

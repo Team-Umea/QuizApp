@@ -6,8 +6,14 @@ import { useNavigate } from "react-router";
 
 export default function PlayQuizWebSocketProvider({ children }) {
   const navigate = useNavigate();
-  const { updateConnected, updateError, updateCurrentQuestion, updateScore, updateQuizName } =
-    usePlayQuizStore();
+  const {
+    updateConnected,
+    updateError,
+    updateCurrentQuestion,
+    updateScore,
+    updateQuizName,
+    updateQuizState,
+  } = usePlayQuizStore();
 
   useEffect(() => {
     const socket = getPlayQuizSocket();
@@ -34,9 +40,11 @@ export default function PlayQuizWebSocketProvider({ children }) {
       switch (type) {
         case "CURRENT_QUESTION":
           updateCurrentQuestion(message.question);
+          updateQuizState(message.quizState);
 
           if (message.isFirstQuestion) {
             updateQuizName(message.quizName);
+            updateScore(0);
             navigate("quiz");
           }
           break;
