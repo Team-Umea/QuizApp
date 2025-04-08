@@ -18,8 +18,12 @@ const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients, isFirstQue
     type: "CURRENT_QUESTION",
     quizId,
     quizName,
-    question: currentQuestion,
+    question: { question: currentQuestion.question, options: currentQuestion.options },
     isFirstQuestion,
+    quizState: {
+      questionIndex: quiz.questionIndex,
+      numQuestions: quiz.questions.length,
+    },
   });
 
   const clients = quizClients[quizId] || [];

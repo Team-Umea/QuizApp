@@ -18,8 +18,6 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
     quizClients[quizId] = [];
   }
 
-  console.log(quizClients, quizId);
-
   const isUniqueUsername = ensureUniqueUsername(
     quizClients[quizId].map((client) => client.username),
     username
@@ -31,7 +29,6 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   }
 
   quizClients[quizId].push({ ws, hasAnswered: false, username });
-  console.log(`Client joined quiz: ${quizId}`);
 
   broadCastCurrentQuestion(quiz, liveQuizes[quizId].questions[0], quizClients, true);
 };

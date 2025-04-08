@@ -10,18 +10,12 @@ const quizSocket = (server) => {
   const quizClients = {};
 
   wss.on("connection", (ws) => {
-    const userId = generateUserId();
-
-    ws._userId = userId;
-
-    ws.send(JSON.stringify({ type: "WELCOME", message: `Your id is ${userId}` }));
+    ws._userId = generateUserId();
 
     ws.on("message", (message) => {
       const parsedMessage = parseMessage(ws, message);
       const quizCode = parsedMessage.code;
       const type = parsedMessage.type;
-
-      console.log("Message: ", parsedMessage);
 
       if (quizCode) {
         switch (type) {
@@ -30,7 +24,6 @@ const quizSocket = (server) => {
             break;
           case "ANSWER_QUESTION":
             handleAnswer(ws, parsedMessage, liveQuizes, quizClients, deleteQuiz);
-
           default:
             break;
         }
@@ -45,7 +38,7 @@ const quizSocket = (server) => {
   });
 
   const addQuiz = (quizId, quizData) => {
-    liveQuizes[quizId] = { ...quizData, currentQuizIndex: 0, scores: {} };
+    liveQuizes[quizId] = { ...quizData, questionIndex: 0, scores: {} };
   };
 
   const deleteQuiz = (quizId) => {
