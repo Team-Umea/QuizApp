@@ -1,8 +1,6 @@
 export function hasDuplicates(array) {
-  return (
-    array.map((item) => item.toLowerCase()).filter((item, index) => array.indexOf(item) !== index)
-      .length > 0
-  );
+  const lowercased = array.map((item) => item.toLowerCase());
+  return lowercased.filter((item, index) => lowercased.indexOf(item) !== index).length > 0;
 }
 
 export function extractEndValues(obj, endValue) {
@@ -48,4 +46,13 @@ export function generateQuizName(quizes = []) {
   }
 
   return `Quiz${suffix}`;
+}
+
+export function safeParseJSON(str) {
+  try {
+    const parsed = JSON.parse(str);
+    return parsed;
+  } catch (error) {
+    return null;
+  }
 }

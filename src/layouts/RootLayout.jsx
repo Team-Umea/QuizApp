@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import PageTransition from "./animations/PageTransition";
 import useAuthStore from "../hooks/useAuthStore";
 import useScrollTo from "../hooks/useScrollTo";
+import PlayQuizWebSocketProvider from "../components/socket/PlayQuizWebSocketProvider";
 
 export default function RootLayout() {
   const location = useLocation();
@@ -20,7 +21,7 @@ export default function RootLayout() {
   }, [location.pathname, location.key]);
 
   return (
-    <div>
+    <PlayQuizWebSocketProvider>
       <Header />
       <main className="min-h-screen bg-gray-600 text-white oveflow-x-hidden">
         <PageTransition>
@@ -28,6 +29,6 @@ export default function RootLayout() {
         </PageTransition>
       </main>
       <Footer />
-    </div>
+    </PlayQuizWebSocketProvider>
   );
 }

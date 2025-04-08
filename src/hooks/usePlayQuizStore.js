@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setConnected,
@@ -6,50 +6,34 @@ import {
   setUsername,
   setScore,
   setCurrentQuestion,
+  setError,
 } from "../store/playQuizSlice";
+import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
-const usePlayQuizStore = (url) => {
+const usePlayQuizStore = () => {
   const dispatch = useDispatch();
   const state = useSelector((state) => state.playQuiz);
   const connected = state.connected;
+  const code = state.code;
+  const username = state.username;
 
-  useEffect(() => {
-    const newSocket = new WebSocket(url);
-
-    newSocket.onopen = () => {
-      console.log("WebSocket connection established");
-      dispatch(setConnected(true));
-    };
-
-    newSocket.onclose = () => {
-      console.log("WebSocket connection closed");
-      dispatch(setConnected(false));
-    };
-
-    newSocket.onmessage = (event) => {
-      let parsedMessage;
-
-      try {
-        parsedMessage = JSON.parse(event.data);
-      } catch (error) {
-        console.error(error);
-      }
-      console.log("Received message:", parsedMessage);
-    };
-
-    return () => {
-      newSocket.close();
-      dispatch(setConnected(false));
-    };
-  }, [dispatch, url]);
+  const socket = getPlayQuizSocket();
 
   const sendMessage = (message) => {
-    if (connected && newSocket && newSocket.readyState === WebSocket.OPEN) {
-      newSocket.send(message);
-    } else {
-      console.error("WebSocket is not connected");
+    const overrideDefault = message[code] && message[username];
+    const controlledMessage = overrideDefault ? { ...message, username, code } : message;
+
+    if (connected && socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(controlledMessage));
     }
   };
+
+  const updateConnected = useCallback(
+    (connected) => {
+      dispatch(setConnected(connected));
+    },
+    [connected]
+  );
 
   const updateUsername = useCallback(
     (username) => {
@@ -79,14 +63,23 @@ const usePlayQuizStore = (url) => {
     [dispatch]
   );
 
+  const updateError = useCallback(
+    (error) => {
+      dispatch(setError(error));
+    },
+    [dispatch]
+  );
+
   return {
     ...state,
     connected,
     sendMessage,
+    updateConnected,
     updateUsername,
     updateCode,
     updateScore,
     updateCurrentQuestion,
+    updateError,
   };
 };
 

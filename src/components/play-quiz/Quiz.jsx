@@ -9,7 +9,7 @@ const Quiz = () => {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:3009"); // Replace YOUR_PORT with your server port
+    const socket = new WebSocket("ws://localhost:3009");
     setWs(socket);
 
     socket.onopen = () => {

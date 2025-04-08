@@ -8,11 +8,13 @@ import ProtectedAdminRoute from "../components/auth/ProtectedAdminRoute";
 import ProtectedUserRoute from "../components/auth/ProtectedUserRoute";
 import SignInRedirect from "../components/auth/SignInRedirect";
 import CreateQuizPage from "../pages/CreateQuizPage";
+import QuizPage from "../pages/QuizPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<HomePage />} />
+      <Route path="quiz" element={<QuizPage />} />
       <Route
         path="/signin"
         element={

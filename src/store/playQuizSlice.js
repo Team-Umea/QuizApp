@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const USERNAME_KEY = "quizAppUsername";
-const CODE_KEY = "quizAppCode";
+export const USERNAME_KEY = "quizAppUsername";
+export const CODE_KEY = "quizAppCode";
 const SCORE_KEY = "quizAppScore";
 const CURRENT_QUESTIONS_KEY = "quizAppCurrentQuestion";
 
@@ -11,6 +11,7 @@ const initialState = {
   code: sessionStorage.getItem(CODE_KEY) || "",
   score: sessionStorage.getItem(SCORE_KEY) || "",
   currentQuestion: sessionStorage.getItem(CURRENT_QUESTIONS_KEY) || "",
+  error: null,
 };
 
 const playQuizSlice = createSlice({
@@ -43,11 +44,21 @@ const playQuizSlice = createSlice({
       state.currentQuestion = currentQuestion;
       sessionStorage.setItem(CURRENT_QUESTIONS_KEY, currentQuestion);
     },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { setConnected, closeSocket, setUsername, setCode, setScore, setCurrentQuestion } =
-  playQuizSlice.actions;
+export const {
+  setConnected,
+  closeSocket,
+  setUsername,
+  setCode,
+  setScore,
+  setCurrentQuestion,
+  setError,
+} = playQuizSlice.actions;
 
 export const selectConnected = (state) => state.playQuiz.connected;
 

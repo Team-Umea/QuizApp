@@ -3,6 +3,9 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PrimaryBtn from "../btn/PrimaryBtn";
 import DefaultInput from "../form/DefaultInput";
+import usePlayQuizStore from "../../hooks/usePlayQuizStore";
+import { CODE_KEY, USERNAME_KEY } from "../../store/playQuizSlice";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   username: z
@@ -14,17 +17,21 @@ const formSchema = z.object({
 });
 
 export default function JoinQuizForm() {
+  const { code, sendMessage, updateUsername, updateCode } = usePlayQuizStore();
   const formMethods = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { username: "", code: "" },
+    defaultValues: {
+      username: localStorage.getItem(USERNAME_KEY) || "",
+      code: sessionStorage.getItem(CODE_KEY) || "",
+    },
   });
 
   const { handleSubmit } = formMethods;
 
   const onSubmit = (data) => {
-    console.log(data);
-
-    //websocket
+    updateUsername(data.username);
+    updateCode(data.code);
+    sendMessage({ type: "JOIN_QUIZ", code: data.code, username: data.username });
   };
 
   return (
@@ -43,7 +50,7 @@ export default function JoinQuizForm() {
         <DefaultInput name="code" label="Quiz Code" placeholder="Enter a quiz code to join" />
         <div className="mt-8">
           <PrimaryBtn type="submit">
-            <span>Join Quiz</span>
+            <span className="font-medium">Join Quiz</span>
           </PrimaryBtn>
         </div>
       </form>
