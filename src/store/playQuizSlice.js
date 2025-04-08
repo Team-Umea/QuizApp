@@ -11,6 +11,7 @@ const initialState = {
   code: sessionStorage.getItem(CODE_KEY) || "",
   score: sessionStorage.getItem(SCORE_KEY) || "",
   currentQuestion: sessionStorage.getItem(CURRENT_QUESTIONS_KEY) || "",
+  quizName: "",
   error: null,
 };
 
@@ -44,6 +45,9 @@ const playQuizSlice = createSlice({
       state.currentQuestion = currentQuestion;
       sessionStorage.setItem(CURRENT_QUESTIONS_KEY, currentQuestion);
     },
+    setQuizName: (state, action) => {
+      state.quizName = action.payload;
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -57,6 +61,7 @@ export const {
   setCode,
   setScore,
   setCurrentQuestion,
+  setQuizName,
   setError,
 } = playQuizSlice.actions;
 

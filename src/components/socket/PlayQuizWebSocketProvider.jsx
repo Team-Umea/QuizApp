@@ -1,4 +1,3 @@
-// components/socket/PlayQuizWebSocketProvider.jsx
 import { useEffect } from "react";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 import { getPlayQuizSocket } from "../../sockets/playQuizSocket";
@@ -7,7 +6,8 @@ import { useNavigate } from "react-router";
 
 export default function PlayQuizWebSocketProvider({ children }) {
   const navigate = useNavigate();
-  const { updateConnected, updateError, updateCurrentQuestion, updateScore } = usePlayQuizStore();
+  const { updateConnected, updateError, updateCurrentQuestion, updateScore, updateQuizName } =
+    usePlayQuizStore();
 
   useEffect(() => {
     const socket = getPlayQuizSocket();
@@ -36,6 +36,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
           updateCurrentQuestion(message.question);
 
           if (message.isFirstQuestion) {
+            updateQuizName(message.quizName);
             navigate("quiz");
           }
           break;

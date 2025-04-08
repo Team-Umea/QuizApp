@@ -16,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { watchQuiz } from "../../api/api";
 import { useNavigate, useParams } from "react-router";
 
-const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
+export const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
 
 export default function QuizForm() {
   const navigate = useNavigate();

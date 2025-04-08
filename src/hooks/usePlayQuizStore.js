@@ -7,6 +7,7 @@ import {
   setScore,
   setCurrentQuestion,
   setError,
+  setQuizName,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -21,7 +22,7 @@ const usePlayQuizStore = () => {
 
   const sendMessage = (message) => {
     const overrideDefault = message[code] && message[username];
-    const controlledMessage = overrideDefault ? { ...message, username, code } : message;
+    const controlledMessage = overrideDefault ? message : { ...message, username, code };
 
     if (connected && socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(controlledMessage));
@@ -63,6 +64,13 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const updateQuizName = useCallback(
+    (quizName) => {
+      dispatch(setQuizName(quizName));
+    },
+    [dispatch]
+  );
+
   const updateError = useCallback(
     (error) => {
       dispatch(setError(error));
@@ -79,6 +87,7 @@ const usePlayQuizStore = () => {
     updateCode,
     updateScore,
     updateCurrentQuestion,
+    updateQuizName,
     updateError,
   };
 };
