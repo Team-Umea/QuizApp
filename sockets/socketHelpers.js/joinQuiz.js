@@ -1,8 +1,8 @@
 const { broadCastCurrentQuestion } = require("./message");
 
-const handleJoinQuiz = (ws, message, quizClients, liveQuizes, callback) => {
+const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const username = message.username;
-  const quizCode = parsedMessage.code;
+  const quizCode = message.code;
 
   const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
 
@@ -12,8 +12,16 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes, callback) => {
     return;
   }
 
+  const quizId = quiz._id;
+
+  if (!quizClients[quizId]) {
+    quizClients[quizId] = [];
+  }
+
+  console.log(quizClients, quizId);
+
   const isUniqueUsername = ensureUniqueUsername(
-    quizClients.map((client) => client.username),
+    quizClients[quizId].map((client) => client.username),
     username
   );
 
@@ -22,16 +30,10 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes, callback) => {
     return;
   }
 
-  const quizId = quiz._id;
-
-  if (!quizClients[quizId]) {
-    quizClients[quizId] = [];
-  }
-
   quizClients[quizId].push({ ws, hasAnswered: false, username });
   console.log(`Client joined quiz: ${quizId}`);
 
-  broadCastCurrentQuestion(quizId, liveQuizes[quizId].questions[0], quizClients);
+  broadCastCurrentQuestion(quiz, liveQuizes[quizId].questions[0], quizClients, true);
 };
 
 const ensureUniqueUsername = (users, username) => {

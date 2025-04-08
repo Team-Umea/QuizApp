@@ -21,13 +21,15 @@ const quizSocket = (server) => {
       const quizCode = parsedMessage.code;
       const type = parsedMessage.type;
 
+      console.log("Message: ", parsedMessage);
+
       if (quizCode) {
         switch (type) {
           case "JOIN_QUIZ":
             handleJoinQuiz(ws, parsedMessage, quizClients, liveQuizes);
             break;
-          case "ANSWER_QUESTIION":
-            handleAnswer(ws, message, liveQuizes, quizClients, deleteQuiz);
+          case "ANSWER_QUESTION":
+            handleAnswer(ws, parsedMessage, liveQuizes, quizClients, deleteQuiz);
 
           default:
             break;

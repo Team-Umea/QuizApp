@@ -1,6 +1,6 @@
-const parseMessage = (ws, message) => {
-  console.log(`Received message: ${message}`);
+const WebSocket = require("ws");
 
+const parseMessage = (ws, message) => {
   try {
     return JSON.parse(message);
   } catch (error) {
@@ -10,11 +10,16 @@ const parseMessage = (ws, message) => {
   }
 };
 
-const broadCastCurrentQuestion = (quizId, currentQuestion, quizClients) => {
+const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients, isFirstQuestion = false) => {
+  const quizId = quiz._id;
+  const quizName = quiz.quizName;
+
   const message = JSON.stringify({
     type: "CURRENT_QUESTION",
     quizId,
+    quizName,
     question: currentQuestion,
+    isFirstQuestion,
   });
 
   const clients = quizClients[quizId] || [];

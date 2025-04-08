@@ -40,7 +40,7 @@ const handleAnswer = (ws, message, liveQuizes, quizClients) => {
   const allAnswered = quizClients[quizId].every((client) => client.hasAnswered);
   if (allAnswered) {
     console.log(`All clients have answered for quiz: ${quizId}`);
-    updateCurrentQuestion(quizId, liveQuizes, quizClients, onQuizEnd);
+    updateCurrentQuestion(quizId, liveQuizes, quizClients);
   }
 };
 
@@ -54,7 +54,7 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
 
     if (quiz.currentQuizIndex < quiz.questions.length) {
       const currentQuestion = quiz.questions[quiz.currentQuizIndex];
-      broadCastCurrentQuestion(quizId, currentQuestion.quizClients);
+      broadCastCurrentQuestion(quiz, currentQuestion, quizClients);
     } else {
       console.log(`Quiz ${quizId} has ended.`);
       delete liveQuizes[quizId];
