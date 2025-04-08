@@ -1,5 +1,16 @@
 const QuizModel = require("../models/QuizModel");
 
+const startQuiz = async (quizManager) => {
+  try {
+    const quizes = await QuizModel.find().lean();
+    const quiz = quizes[0];
+
+    quizManager.addQuiz(String(quiz._id), { ...quiz, _id: String(quiz._id), code: "111111" });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const watchQuiz = async (req, res) => {
   const userId = req.user._id;
   const quizData = { ...req.body, user: userId };
@@ -117,4 +128,4 @@ const cancelQuiz = async (req, res) => {
   }
 };
 
-module.exports = { watchQuiz, getQuizes, deleteQuiz, runQuiz, cancelQuiz };
+module.exports = { watchQuiz, getQuizes, deleteQuiz, runQuiz, cancelQuiz, startQuiz };
