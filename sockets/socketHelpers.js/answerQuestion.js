@@ -17,40 +17,17 @@ const handleAnswer = (ws, message, liveQuizes, quizClients) => {
 
   correctAnswer(ws, quiz, quizClients, currentQuestion, answer);
 
-  //   const isRightAnswer = currentQuestion.answers.some((ans) => parseInt(ans) === parseInt(answer));
-
-  //   console.log("Answer was: ", isRightAnswer);
-
-  //   if (currentQuestion && isRightAnswer) {
-  //     const userId = ws._userId;
-
-  //     if (!quiz.scores[userId]) {
-  //       quiz.scores[userId] = 0;
-  //     }
-
-  //     quiz.scores[userId] += 10;
-  //     console.log(`User ${userId} answered correctly! Current score: ${quiz.scores[userId]}`);
-
-  //     ws.send(JSON.stringify({ type: "SCORE_UPDATE", score: quiz.scores[userId] }));
-  //   } else {
-  //     console.log(`User answered incorrectly: ${answer}`);
-  //   }
-
-  //   const clientEntry = quizClients[quizId].find((client) => client.ws === ws);
-  //   if (clientEntry) {
-  //     clientEntry.hasAnswered = true;
-  //   }
-
   const allAnswered = quizClients[quizId].every((client) => client.hasAnswered);
 
   if (allAnswered) {
-    console.log(`All clients have answered for quiz: ${quizId}`);
-    updateCurrentQuestion(quizId, liveQuizes, quizClients);
+    quiz.bonusPoints = null;
+    updateCurrentQuestion(ws, quizId, liveQuizes, quizClients);
   }
 };
 
-const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
+const updateCurrentQuestion = (ws, quizId, liveQuizes, quizClients) => {
   const quiz = liveQuizes[quizId];
+
   if (quiz) {
     quiz.questionIndex++;
     quizClients[quizId].forEach((client) => {
@@ -61,9 +38,26 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
       const currentQuestion = quiz.questions[quiz.questionIndex];
       broadCastCurrentQuestion(quiz, currentQuestion, quizClients);
     } else {
-      console.log(`Quiz ${quizId} has ended.`);
       delete liveQuizes[quizId];
-      // Handle end of quiz logic (e.g., broadcasting results)
+
+      const scores = quiz.scores;
+      const userIds = Object.keys(quizClients);
+
+      const result = userIds
+        .map((id) => {
+          const clientArray = quizClients[id];
+          const score = scores[ws._userId].score;
+
+          const username = clientArray && clientArray.length > 0 ? clientArray[0].username : null;
+
+          return {
+            score,
+            username,
+          };
+        })
+        .sort((a, b) => b.score - a.score);
+
+      ws.send(JSON.stringify({ type: "RESULT", result }));
     }
   }
 };
@@ -84,10 +78,19 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
   }
 
   if (isRightAnswer) {
-    const points = 10 + 2 * quiz.scores[userId].streak;
+    if (quiz.bonusPoints == null) {
+      quiz.bonusPoints = 200;
+    }
+
+    const bonus = quiz.bonusPoints > 0 ? quiz.bonusPoints : 0;
+    const points = 1000 + 50 * quiz.scores[userId].streak + bonus;
 
     quiz.scores[userId].score += points;
     quiz.scores[userId].streak++;
+
+    if (quiz.bonusPoints) {
+      quiz.bonusPoints--;
+    }
 
     ws.send(JSON.stringify({ type: "SCORE_UPDATE", score: quiz.scores[userId].score }));
   } else {
