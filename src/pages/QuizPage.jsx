@@ -7,8 +7,8 @@ export default function QuizPage() {
   const location = useLocation();
   const { quizName, quizState, score, currentQuestion } = usePlayQuizStore();
 
-  const question = currentQuestion.question;
-  const options = currentQuestion.options;
+  const question = currentQuestion?.question;
+  const options = currentQuestion?.options;
 
   const isSubPage = !location.pathname.endsWith("quiz") && !location.pathname.endsWith("quiz/");
 

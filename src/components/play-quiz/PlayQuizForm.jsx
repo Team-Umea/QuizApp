@@ -2,7 +2,7 @@ import React from "react";
 import { OPTION_COLORS } from "../create-quiz/QuizForm";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 
-export default function PlayQuizForm({ options }) {
+export default function PlayQuizForm({ options = [] }) {
   const { sendMessage } = usePlayQuizStore();
 
   const onSubmit = (e) => {

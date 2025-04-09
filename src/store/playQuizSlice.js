@@ -68,6 +68,21 @@ const playQuizSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+    reset: (state) => {
+      state.code = "";
+      state.score = 0;
+      state.quizName = "";
+      state.currentQuestion = null;
+      state.quizState = null;
+      state.connected = false;
+      state.error = null;
+
+      sessionStorage.removeItem(CODE_KEY);
+      sessionStorage.removeItem(SCORE_KEY);
+      sessionStorage.removeItem(QUIZ_NAME_KEY);
+      sessionStorage.removeItem(CURRENT_QUESTIONS_KEY);
+      sessionStorage.removeItem(QUIZ_STATE_KEY);
+    },
   },
 });
 
@@ -82,6 +97,7 @@ export const {
   setQuizState,
   setQuizResult,
   setError,
+  reset,
 } = playQuizSlice.actions;
 
 export const selectConnected = (state) => state.playQuiz.connected;

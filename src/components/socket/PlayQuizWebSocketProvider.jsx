@@ -14,6 +14,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateQuizName,
     updateQuizState,
     updateQuizResult,
+    resetQuiz,
   } = usePlayQuizStore();
 
   useEffect(() => {
@@ -55,6 +56,8 @@ export default function PlayQuizWebSocketProvider({ children }) {
           break;
         case "RESULT":
           updateQuizResult(message.result);
+          resetQuiz();
+          socket.close();
           navigate("/quiz/result");
           break;
         case "ERROR":
@@ -65,11 +68,6 @@ export default function PlayQuizWebSocketProvider({ children }) {
       }
 
       console.log("📩 Received:", message);
-    };
-
-    return () => {
-      // updateConnected(false);
-      // socket.close();
     };
   }, []);
 

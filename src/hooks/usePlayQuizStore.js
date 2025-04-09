@@ -10,6 +10,7 @@ import {
   setQuizName,
   setQuizState,
   setQuizResult,
+  reset,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -94,6 +95,10 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const resetQuiz = useCallback(() => {
+    dispatch(reset());
+  }, [dispatch]);
+
   return {
     ...state,
     connected,
@@ -107,6 +112,7 @@ const usePlayQuizStore = () => {
     updateQuizState,
     updateQuizResult,
     updateError,
+    resetQuiz,
   };
 };
 
