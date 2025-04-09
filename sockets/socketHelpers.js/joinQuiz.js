@@ -30,7 +30,25 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
 
   quizClients[quizId].push({ ws, hasAnswered: false, username });
 
-  broadCastCurrentQuestion(quiz, liveQuizes[quizId].questions[0], quizClients, true);
+  const players = quizClients[quizId].map((client) => client.username);
+
+  ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName }));
+
+  const startQuiz = players.length >= 2;
+
+  if (startQuiz) {
+    const firstQuestion = liveQuizes[quizId].questions[0];
+
+    quizClients[quizId].forEach((client) => {
+      client.ws.send(
+        JSON.stringify({
+          type: "START",
+          question: { question: firstQuestion.question, options: firstQuestion.options },
+          quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
+        })
+      );
+    });
+  }
 };
 
 const ensureUniqueUsername = (users, username) => {

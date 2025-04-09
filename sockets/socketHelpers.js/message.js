@@ -10,16 +10,12 @@ const parseMessage = (ws, message) => {
   }
 };
 
-const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients, isFirstQuestion = false) => {
+const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients) => {
   const quizId = quiz._id;
-  const quizName = quiz.quizName;
 
   const message = JSON.stringify({
     type: "CURRENT_QUESTION",
-    quizId,
-    quizName,
     question: { question: currentQuestion.question, options: currentQuestion.options },
-    isFirstQuestion,
     quizState: {
       questionIndex: quiz.questionIndex,
       numQuestions: quiz.questions.length,

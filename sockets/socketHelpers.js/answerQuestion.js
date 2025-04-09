@@ -38,26 +38,29 @@ const updateCurrentQuestion = (ws, quizId, liveQuizes, quizClients) => {
       const currentQuestion = quiz.questions[quiz.questionIndex];
       broadCastCurrentQuestion(quiz, currentQuestion, quizClients);
     } else {
-      delete liveQuizes[quizId];
-
       const scores = quiz.scores;
-      const userIds = Object.keys(quizClients);
 
-      const result = userIds
-        .map((id) => {
-          const clientArray = quizClients[id];
-          const score = scores[ws._userId].score;
-
-          const username = clientArray && clientArray.length > 0 ? clientArray[0].username : null;
-
+      const result = quizClients[quizId]
+        .map((client) => {
+          const username = client.username;
+          const score = scores[client.ws._userId].score;
           return {
-            score,
             username,
+            score,
           };
         })
         .sort((a, b) => b.score - a.score);
 
-      ws.send(JSON.stringify({ type: "RESULT", result }));
+      quizClients[quizId].forEach((client) => {
+        client.ws.send(
+          JSON.stringify({
+            type: "RESULT",
+            result,
+          })
+        );
+      });
+
+      delete liveQuizes[quizId];
     }
   }
 };
