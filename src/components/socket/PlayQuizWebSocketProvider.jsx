@@ -14,6 +14,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateQuizName,
     updateQuizState,
     updateQuizResult,
+    updatePlayers,
     resetQuiz,
   } = usePlayQuizStore();
 
@@ -40,16 +41,20 @@ export default function PlayQuizWebSocketProvider({ children }) {
       const type = message?.type;
 
       switch (type) {
+        case "JOINED":
+          updateQuizName(message.quizName);
+          updateScore(0);
+          updatePlayers(message.players);
+          navigate("/quiz/lobby");
+          break;
+        case "START":
+          updateCurrentQuestion(message.question);
+          updateQuizState(message.quizState);
+          navigate("/quiz");
+          break;
         case "CURRENT_QUESTION":
           updateCurrentQuestion(message.question);
           updateQuizState(message.quizState);
-
-          if (message.isFirstQuestion) {
-            updateQuizName(message.quizName);
-            updateScore(0);
-            navigate("quiz");
-          }
-
           break;
         case "SCORE_UPDATE":
           updateScore(message.score);

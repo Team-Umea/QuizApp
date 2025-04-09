@@ -17,7 +17,7 @@ const formSchema = z.object({
 });
 
 export default function JoinQuizForm() {
-  const { code, sendMessage, updateUsername, updateCode } = usePlayQuizStore();
+  const { error, sendMessage, updateUsername, updateCode, updateError } = usePlayQuizStore();
   const formMethods = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -26,7 +26,11 @@ export default function JoinQuizForm() {
     },
   });
 
-  const { handleSubmit } = formMethods;
+  const { watch, handleSubmit } = formMethods;
+
+  useEffect(() => {
+    updateError(null);
+  }, [JSON.stringify(watch())]);
 
   const onSubmit = (data) => {
     updateUsername(data.username);
@@ -48,7 +52,8 @@ export default function JoinQuizForm() {
           maxLength={20}
         />
         <DefaultInput name="code" label="Quiz Code" placeholder="Enter a quiz code to join" />
-        <div className="mt-8">
+        {error && <p className="text-red-500 text-center font-medium">{error}</p>}
+        <div className={`${!error ? "mt-8" : ""}`}>
           <PrimaryBtn type="submit">
             <span className="font-medium">Join Quiz</span>
           </PrimaryBtn>
