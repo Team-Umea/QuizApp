@@ -9,12 +9,15 @@ import ProtectedUserRoute from "../components/auth/ProtectedUserRoute";
 import SignInRedirect from "../components/auth/SignInRedirect";
 import CreateQuizPage from "../pages/CreateQuizPage";
 import QuizPage from "../pages/QuizPage";
+import QuizResultPage from "../pages/QuizResultPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<HomePage />} />
-      <Route path="quiz" element={<QuizPage />} />
+      <Route path="quiz" element={<QuizPage />}>
+        <Route path="result" element={<QuizResultPage />} />
+      </Route>
       <Route
         path="/signin"
         element={

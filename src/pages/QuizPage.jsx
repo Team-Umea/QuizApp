@@ -1,12 +1,20 @@
 import React from "react";
 import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import PlayQuizForm from "../components/play-quiz/PlayQuizForm";
+import { Outlet, useLocation } from "react-router";
 
 export default function QuizPage() {
+  const location = useLocation();
   const { quizName, quizState, score, currentQuestion } = usePlayQuizStore();
 
   const question = currentQuestion.question;
   const options = currentQuestion.options;
+
+  const isSubPage = !location.pathname.endsWith("quiz") && !location.pathname.endsWith("quiz/");
+
+  if (isSubPage) {
+    return <Outlet />;
+  }
 
   return (
     <div>

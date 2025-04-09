@@ -5,7 +5,8 @@ export const CODE_KEY = "quizAppCode";
 const SCORE_KEY = "quizAppScore";
 const CURRENT_QUESTIONS_KEY = "quizAppCurrentQuestion";
 const QUIZ_NAME_KEY = "quizAppQuizname";
-const QUIZ_STATE_KEY = "quizStateKey";
+const QUIZ_STATE_KEY = "quizAppStateKey";
+const QUIZ_RESULT_KEY = "quizAppResultKey";
 
 const initialState = {
   connected: false,
@@ -15,6 +16,7 @@ const initialState = {
   currentQuestion: JSON.parse(sessionStorage.getItem(CURRENT_QUESTIONS_KEY) || "null"),
   quizName: sessionStorage.getItem(QUIZ_NAME_KEY) || "",
   quizState: JSON.parse(sessionStorage.getItem(QUIZ_STATE_KEY) || "null"),
+  quizResult: JSON.parse(sessionStorage.getItem(QUIZ_RESULT_KEY) || "[]"),
   error: null,
 };
 
@@ -58,6 +60,11 @@ const playQuizSlice = createSlice({
       state.quizState = quizState;
       sessionStorage.setItem(QUIZ_STATE_KEY, JSON.stringify(quizState));
     },
+    setQuizResult: (state, action) => {
+      const quizResult = action.payload;
+      state.quizResult = quizResult;
+      sessionStorage.setItem(QUIZ_RESULT_KEY, JSON.stringify(quizResult));
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -73,6 +80,7 @@ export const {
   setCurrentQuestion,
   setQuizName,
   setQuizState,
+  setQuizResult,
   setError,
 } = playQuizSlice.actions;
 

@@ -13,6 +13,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateScore,
     updateQuizName,
     updateQuizState,
+    updateQuizResult,
   } = usePlayQuizStore();
 
   useEffect(() => {
@@ -47,9 +48,14 @@ export default function PlayQuizWebSocketProvider({ children }) {
             updateScore(0);
             navigate("quiz");
           }
+
           break;
         case "SCORE_UPDATE":
           updateScore(message.score);
+          break;
+        case "RESULT":
+          updateQuizResult(message.result);
+          navigate("/quiz/result");
           break;
         case "ERROR":
           updateError(message.message);
