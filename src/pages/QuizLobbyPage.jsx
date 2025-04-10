@@ -4,7 +4,7 @@ import { BounceLoader } from "react-spinners";
 import { OPTION_COLORS } from "../components/create-quiz/QuizForm";
 
 export default function QuizLobbyPage() {
-  const { quizName, players } = usePlayQuizStore();
+  const { quizName, players, quizStartDelay } = usePlayQuizStore();
 
   return (
     <div>
@@ -12,7 +12,9 @@ export default function QuizLobbyPage() {
         <h2 className="text-2xl text-fuchsia-400 px-8 py-4">{quizName}</h2>
       </div>
       <div className="flex flex-col justify-center items-center gap-y-8 min-h-[300px] bg-slate-700">
-        <h3 className="text-xl">Wating for participants</h3>
+        <h3 className="text-xl">
+          {quizStartDelay ? "Quiz in starting in 3s" : "Wating for participants"}
+        </h3>
         <BounceLoader color="darkgrey" />
       </div>
       <div className="flex flex-col gap-y-8 p-8">

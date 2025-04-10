@@ -12,6 +12,7 @@ import {
   setQuizResult,
   reset,
   setPlayers,
+  setQuizStartDelay,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -96,6 +97,13 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const updateQuizStartDelay = useCallback(
+    (quizStartDelay) => {
+      dispatch(setQuizStartDelay(quizStartDelay));
+    },
+    [dispatch]
+  );
+
   const updateError = useCallback(
     (error) => {
       dispatch(setError(error));
@@ -121,6 +129,7 @@ const usePlayQuizStore = () => {
     updateQuizResult,
     updateError,
     updatePlayers,
+    updateQuizStartDelay,
     resetQuiz,
   };
 };

@@ -15,6 +15,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateQuizState,
     updateQuizResult,
     updatePlayers,
+    updateQuizStartDelay,
     resetQuiz,
   } = usePlayQuizStore();
 
@@ -46,6 +47,11 @@ export default function PlayQuizWebSocketProvider({ children }) {
           updateScore(0);
           updatePlayers(message.players);
           navigate("/quiz/lobby");
+          break;
+        case "PENDING":
+          console.log("Delay: ", message.delay);
+
+          updateQuizStartDelay(message.delay);
           break;
         case "START":
           updateCurrentQuestion(message.question);

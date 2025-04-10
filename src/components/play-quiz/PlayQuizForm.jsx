@@ -9,7 +9,6 @@ export default function PlayQuizForm({ options = [] }) {
     e.preventDefault();
     const selectedValue = e.nativeEvent.submitter.value;
     sendMessage({ type: "ANSWER_QUESTION", answer: selectedValue });
-    console.log("Selected value:", selectedValue);
   };
 
   return (
