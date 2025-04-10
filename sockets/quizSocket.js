@@ -12,6 +12,15 @@ const quizSocket = (server) => {
   wss.on("connection", (ws) => {
     ws._userId = generateUserId();
 
+    const publicQuizes = Object.values(liveQuizes)
+      .filter((quiz) => quiz.isPublic)
+      .map((quiz) => ({
+        _id: quiz._id,
+        quizName: quiz.quizName,
+      }));
+
+    ws.send(JSON.stringify({ type: "CONNECTED", publicQuizes }));
+
     ws.on("message", (message) => {
       const parsedMessage = parseMessage(ws, message);
       const quizCode = parsedMessage.code;
@@ -39,10 +48,28 @@ const quizSocket = (server) => {
 
   const addQuiz = (quizId, quizData) => {
     liveQuizes[quizId] = { ...quizData, questionIndex: 0, scores: {}, isStarted: false };
+
+    const publicQuizes = Object.values(liveQuizes)
+      .filter((quiz) => quiz.isPublic)
+      .map((quiz) => ({
+        _id: quiz._id,
+        quizName: quiz.quizName,
+      }));
+
+    ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
   };
 
   const deleteQuiz = (quizId) => {
     delete liveQuizes[quizId];
+
+    const publicQuizes = Object.values(liveQuizes)
+      .filter((quiz) => quiz.isPublic)
+      .map((quiz) => ({
+        _id: quiz._id,
+        quizName: quiz.quizName,
+      }));
+
+    ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
   };
 
   const getLiveQuizes = () => {
