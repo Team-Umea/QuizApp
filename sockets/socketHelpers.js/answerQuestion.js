@@ -97,7 +97,7 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
     quiz.scores[userId].streak++;
 
     if (quiz.bonusPoints) {
-      quiz.bonusPoints--;
+      quiz.bonusPoints -= 40;
     }
 
     ws.send(JSON.stringify({ type: "SCORE_UPDATE", score: quiz.scores[userId].score }));

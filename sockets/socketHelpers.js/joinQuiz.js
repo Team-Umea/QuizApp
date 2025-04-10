@@ -1,5 +1,4 @@
 const { updateCurrentQuestion } = require("./answerQuestion");
-const { broadCastCurrentQuestion } = require("./message");
 
 const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const username = message.username;
