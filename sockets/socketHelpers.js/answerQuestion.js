@@ -21,11 +21,11 @@ const handleAnswer = (ws, message, liveQuizes, quizClients) => {
 
   if (allAnswered) {
     quiz.bonusPoints = null;
-    updateCurrentQuestion(ws, quizId, liveQuizes, quizClients);
+    updateCurrentQuestion(quizId, liveQuizes, quizClients);
   }
 };
 
-const updateCurrentQuestion = (ws, quizId, liveQuizes, quizClients) => {
+const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
   const quiz = liveQuizes[quizId];
 
   if (quiz) {
@@ -43,7 +43,8 @@ const updateCurrentQuestion = (ws, quizId, liveQuizes, quizClients) => {
       const result = quizClients[quizId]
         .map((client) => {
           const username = client.username;
-          const score = scores[client.ws._userId].score;
+          const score = !scores[client.ws._userId] ? 0 : scores[client.ws._userId].score;
+
           return {
             username,
             score,
@@ -61,6 +62,10 @@ const updateCurrentQuestion = (ws, quizId, liveQuizes, quizClients) => {
       });
 
       delete liveQuizes[quizId];
+
+      return {
+        hasEnded: true,
+      };
     }
   }
 };

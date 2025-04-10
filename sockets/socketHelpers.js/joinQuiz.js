@@ -1,3 +1,4 @@
+const { updateCurrentQuestion } = require("./answerQuestion");
 const { broadCastCurrentQuestion } = require("./message");
 
 const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
@@ -56,6 +57,25 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
         );
       });
     }, 3000);
+
+    let questionIndex = 0;
+
+    setTimeout(() => {
+      const interval = setInterval(() => {
+        if (quiz.questionIndex === questionIndex) {
+          updateCurrentQuestion(quizId, liveQuizes, quizClients);
+        }
+
+        questionIndex = quiz.questionIndex;
+
+        const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+
+        if (isEndOfQuiz) {
+          clearInterval(interval);
+          updateCurrentQuestion(quizId, liveQuizes, quizClients);
+        }
+      }, 8000);
+    }, 8000);
   }
 };
 
