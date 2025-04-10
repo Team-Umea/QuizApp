@@ -1,11 +1,17 @@
 const QuizModel = require("../models/QuizModel");
+const { shuffleArray } = require("../utils/helpers");
 
 const startQuiz = async (quizManager) => {
   try {
     const quizes = await QuizModel.find().lean();
     const quiz = quizes[0];
 
-    quizManager.addQuiz(String(quiz._id), { ...quiz, _id: String(quiz._id), code: "111111" });
+    quizManager.addQuiz(String(quiz._id), {
+      ...quiz,
+      questions: shuffleArray(quiz.questions),
+      _id: String(quiz._id),
+      code: "111111",
+    });
   } catch (error) {
     console.error(error);
   }
