@@ -18,6 +18,28 @@ export const watchQuiz = async (quizData) => {
   }
 };
 
+export const toggleQuizVisibility = async (quizId) => {
+  try {
+    return await axios.put(
+      `${API_ENDPOINTS.TOGGLEQUIZVISIBILITY}/${quizId}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.log(error);
+
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "An error occurred");
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+};
+
 export const deleteQuiz = async (quizId) => {
   try {
     return await axios.delete(`${API_ENDPOINTS.QUIZ}/${quizId}`, {

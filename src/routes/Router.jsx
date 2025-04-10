@@ -11,6 +11,7 @@ import CreateQuizPage from "../pages/CreateQuizPage";
 import QuizPage from "../pages/QuizPage";
 import QuizResultPage from "../pages/QuizResultPage";
 import QuizLobbyPage from "../pages/QuizLobbyPage";
+import JoinQuizPage from "../pages/JoinQuizPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
         <Route path="result" element={<QuizResultPage />} />
         <Route path="lobby" element={<QuizLobbyPage />} />
       </Route>
+      <Route path="join" element={<JoinQuizPage />} />
       <Route
         path="/signin"
         element={

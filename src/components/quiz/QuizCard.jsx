@@ -5,7 +5,7 @@ import DeleteBtn from "../btn/DeleteBtn";
 import StatusBtn from "../btn/StatusBtn";
 import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
-import { deleteQuiz } from "../../api/api";
+import { deleteQuiz, toggleQuizVisibility } from "../../api/api";
 import useQuizStore from "../../hooks/useQuizStore";
 import { cancelQuiz, runQuiz } from "../../api/api";
 
@@ -17,9 +17,7 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
 
   const deleteQuizMutation = useMutation({
     mutationFn: deleteQuiz,
-    onSettled: () => {
-      fetchQuizes();
-    },
+    onSettled: () => fetchQuizes(),
   });
 
   const runQuizMutation = useMutation({
@@ -53,6 +51,11 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
     },
   });
 
+  const toggleQuizVisibilityMutation = useMutation({
+    mutationFn: toggleQuizVisibility,
+    onSettled: () => fetchQuizes(),
+  });
+
   const toggleQuizStatus = () => {
     if (isRunning) {
       cancelQuizMutation.mutate(quiz._id);
@@ -70,9 +73,16 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-y-4 p-8 rounded-lg bg-slate-700">
-      <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
-      <div className="flex gap-x-22">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-4 p-8 rounded-lg bg-slate-700">
+      <div className="flex md:flex-col items-start justify-between w-full md:w-auto">
+        <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
+        <DefaultBtn onClick={() => toggleQuizVisibilityMutation.mutate(quiz._id)}>
+          <span className="text-lg text-blue-200">
+            {quiz.isPublic ? "Set private" : "Set public"}
+          </span>
+        </DefaultBtn>
+      </div>
+      <div className="flex justify-between w-full md:w-auto md:gap-x-22">
         <div className="flex items-center gap-x-10">
           {quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>}
           <StatusBtn onClick={toggleQuizStatus} statusColor={isRunning ? "#e01010" : "#09b537"}>

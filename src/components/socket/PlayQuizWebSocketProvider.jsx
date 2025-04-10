@@ -16,6 +16,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateQuizResult,
     updatePlayers,
     updateQuizStartDelay,
+    updatePublicQuizes,
     resetQuiz,
   } = usePlayQuizStore();
 
@@ -42,6 +43,9 @@ export default function PlayQuizWebSocketProvider({ children }) {
       const type = message?.type;
 
       switch (type) {
+        case "CONNECTED":
+          updatePublicQuizes(message.publicQuizes);
+          break;
         case "JOINED":
           updateQuizName(message.quizName);
           updateScore(0);
@@ -49,8 +53,6 @@ export default function PlayQuizWebSocketProvider({ children }) {
           navigate("/quiz/lobby");
           break;
         case "PENDING":
-          console.log("Delay: ", message.delay);
-
           updateQuizStartDelay(message.delay);
           break;
         case "START":
@@ -70,6 +72,9 @@ export default function PlayQuizWebSocketProvider({ children }) {
           resetQuiz();
           socket.close();
           navigate("/quiz/result");
+          break;
+        case "PUBLIC_QUIZ_UPDATE":
+          updatePublicQuizes(message.publicQuizes);
           break;
         case "ERROR":
           updateError(message.message);
