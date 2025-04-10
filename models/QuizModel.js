@@ -35,6 +35,9 @@ const quizSchema = new Schema({
   isRunning: {
     type: Boolean,
   },
+  isPublic: {
+    type: Boolean,
+  },
 });
 
 const quizModel = mongoose.model("quizes", quizSchema);

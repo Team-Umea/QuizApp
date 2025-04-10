@@ -6,7 +6,7 @@ const ApiRouter = require("./routes/ApiRouter");
 const authechoProxy = require("./middlewares/authechoProxy");
 const quizSocket = require("./sockets/quizSocket");
 const { ensureAuthenticated, ensureAdmin } = require("./middlewares/auth");
-const { startQuiz } = require("./controller/QuizController");
+const { startPublicQuizes } = require("./controller/QuizController");
 
 require("dotenv").config();
 require("./config/db");
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8080;
 const server = http.createServer(app);
 const quizManager = quizSocket(server);
 
-startQuiz(quizManager);
+startPublicQuizes(quizManager);
 
 const openCors = cors({
   origin: (_, callback) => {

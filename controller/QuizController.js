@@ -1,16 +1,16 @@
 const QuizModel = require("../models/QuizModel");
 const { shuffleArray } = require("../utils/helpers");
 
-const startQuiz = async (quizManager) => {
+const startPublicQuizes = async (quizManager) => {
   try {
-    const quizes = await QuizModel.find().lean();
-    const quiz = quizes[0];
+    const quizes = await QuizModel.find({ isPublic: true }).lean();
 
-    quizManager.addQuiz(String(quiz._id), {
-      ...quiz,
-      questions: shuffleArray(quiz.questions),
-      _id: String(quiz._id),
-      code: "111111",
+    quizes.forEach((quiz) => {
+      quizManager.addQuiz(String(quiz._id), {
+        ...quiz,
+        questions: shuffleArray(quiz.questions),
+        _id: String(quiz._id),
+      });
     });
   } catch (error) {
     console.error(error);
@@ -59,6 +59,34 @@ const watchQuiz = async (req, res) => {
   }
 };
 
+const toggleQuizVisibility = async (req, res) => {
+  const { quizid: quizId } = req.params;
+  const quizManager = req.quizManager;
+
+  try {
+    const quiz = await QuizModel.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    if (quiz.isPublic) {
+      quizManager.deleteQuiz(quizId);
+    } else {
+      quizManager.addQuiz(quizId, quiz);
+    }
+
+    quiz.isPublic = !quiz.isPublic;
+
+    await quiz.save();
+
+    res.status(200).json({ message: "Quiz visibility toggled", success: true, quiz });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
 const getQuizes = async (req, res) => {
   const userId = req.user._id;
 
@@ -98,14 +126,9 @@ const runQuiz = async (req, res) => {
   const quizManager = req.quizManager;
 
   try {
-    // const quiz = await QuizModel.findById(quizId);
     const code = "123212";
 
     const quiz = await QuizModel.findByIdAndUpdate(quizId, { isRunning: true, code: code }).lean();
-
-    // quiz.isRunning = true;
-    // quiz.code = code;
-    // await quiz.save();
 
     quizManager.addQuiz(quizId, { ...quiz, code });
 
@@ -134,4 +157,12 @@ const cancelQuiz = async (req, res) => {
   }
 };
 
-module.exports = { watchQuiz, getQuizes, deleteQuiz, runQuiz, cancelQuiz, startQuiz };
+module.exports = {
+  watchQuiz,
+  toggleQuizVisibility,
+  getQuizes,
+  deleteQuiz,
+  runQuiz,
+  cancelQuiz,
+  startPublicQuizes,
+};
