@@ -13,7 +13,7 @@ export default function QuizLobbyPage() {
       </div>
       <div className="flex flex-col justify-center items-center gap-y-8 min-h-[300px] bg-slate-700">
         <h3 className="text-xl">
-          {quizStartDelay ? "Quiz in starting in 3s" : "Wating for participants"}
+          {quizStartDelay ? "Quiz is starting in 3s" : "Wating for participants"}
         </h3>
         <BounceLoader color="darkgrey" />
       </div>

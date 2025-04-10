@@ -2,13 +2,14 @@ import React from "react";
 import { OPTION_COLORS } from "../create-quiz/QuizForm";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 
-export default function PlayQuizForm({ options = [] }) {
+export default function PlayQuizForm({ options = [], setHasAnswered }) {
   const { sendMessage } = usePlayQuizStore();
 
   const onSubmit = (e) => {
     e.preventDefault();
     const selectedValue = e.nativeEvent.submitter.value;
     sendMessage({ type: "ANSWER_QUESTION", answer: selectedValue });
+    setHasAnswered(true);
   };
 
   return (
