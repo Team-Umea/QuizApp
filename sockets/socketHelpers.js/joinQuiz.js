@@ -41,13 +41,21 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
 
     quizClients[quizId].forEach((client) => {
       client.ws.send(
-        JSON.stringify({
-          type: "START",
-          question: { question: firstQuestion.question, options: firstQuestion.options },
-          quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
-        })
+        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 3 })
       );
     });
+
+    setTimeout(() => {
+      quizClients[quizId].forEach((client) => {
+        client.ws.send(
+          JSON.stringify({
+            type: "START",
+            question: { question: firstQuestion.question, options: firstQuestion.options },
+            quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
+          })
+        );
+      });
+    }, 3000);
   }
 };
 
