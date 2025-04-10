@@ -7,8 +7,12 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
 
   if (!quiz) {
-    console.log(`Quiz not found for code: ${quizCode}`);
     ws.send(JSON.stringify({ type: "ERROR", message: "Quiz not found" }));
+    return;
+  }
+
+  if (quiz.isStarted) {
+    ws.send(JSON.stringify({ type: "ERROR", message: "Cannot join an ongoing quiz" }));
     return;
   }
 
@@ -37,6 +41,8 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const startQuiz = players.length >= 2;
 
   if (startQuiz) {
+    quiz.isStarted = true;
+
     const firstQuestion = liveQuizes[quizId].questions[0];
 
     quizClients[quizId].forEach((client) => {

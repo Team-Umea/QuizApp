@@ -38,7 +38,7 @@ const quizSocket = (server) => {
   });
 
   const addQuiz = (quizId, quizData) => {
-    liveQuizes[quizId] = { ...quizData, questionIndex: 0, scores: {} };
+    liveQuizes[quizId] = { ...quizData, questionIndex: 0, scores: {}, isStarted: false };
   };
 
   const deleteQuiz = (quizId) => {
