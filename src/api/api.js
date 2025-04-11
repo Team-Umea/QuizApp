@@ -95,3 +95,23 @@ export const cancelQuiz = async (quizId) => {
     }
   }
 };
+
+export const launchQuiz = async (quizId) => {
+  try {
+    return await axios.post(
+      `${API_ENDPOINTS.LAUNCHQUIZ}/${quizId}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "An error occurred");
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+};

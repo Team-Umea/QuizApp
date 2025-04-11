@@ -1,5 +1,4 @@
 import React from "react";
-import JoinQuizForm from "../components/play-quiz/JoinQuizForm";
 import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import JoinPublicQuizForm from "../components/play-quiz/JoinPublicQuizForm";
 import { NavLink } from "react-router";
