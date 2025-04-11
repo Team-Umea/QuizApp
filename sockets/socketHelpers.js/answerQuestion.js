@@ -66,34 +66,32 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
 
       delete liveQuizes[quizId];
 
-      QuizModel.findById(quizId).then((quizData) => {
-        const isPublicQuiz = quizData.isPublic;
+      QuizModel.findByIdAndUpdate(quizId, { isLaunched: false, isRunning: false }).then(
+        (quizData) => {
+          const isPublicQuiz = quizData.isPublic;
 
-        if (isPublicQuiz) {
-          liveQuizes[quizId] = {
-            ...quizData._doc,
-            _id: String(quizData._doc._id),
-            questionIndex: 0,
-            scores: {},
-            isStarted: false,
-          };
+          if (isPublicQuiz) {
+            liveQuizes[quizId] = {
+              ...quizData._doc,
+              _id: String(quizData._doc._id),
+              questionIndex: 0,
+              scores: {},
+              isStarted: false,
+            };
 
-          const publicQuizes = Object.values(liveQuizes)
-            .filter((quiz) => quiz.isPublic)
-            .map((quiz) => ({
-              _id: quiz._id,
-              quizName: quiz.quizName,
-            }));
+            const publicQuizes = Object.values(liveQuizes)
+              .filter((quiz) => quiz.isPublic)
+              .map((quiz) => ({
+                _id: quiz._id,
+                quizName: quiz.quizName,
+              }));
 
-          quizClients[quizId].forEach((client) => {
-            client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
-          });
+            quizClients[quizId].forEach((client) => {
+              client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+            });
+          }
         }
-      });
-
-      return {
-        hasEnded: true,
-      };
+      );
     }
   }
 };

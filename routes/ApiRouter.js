@@ -6,12 +6,14 @@ const {
   deleteQuiz,
   getQuizes,
   toggleQuizVisibility,
+  launchQuiz,
 } = require("../controller/QuizController");
 
 router.get("/quizes", getQuizes);
 
 router.post("/runquiz/:quizid", runQuiz);
 router.post("/cancelquiz/:quizid", cancelQuiz);
+router.post("/launchquiz/:quizid", launchQuiz);
 
 router.put("/watchquiz", watchQuiz);
 router.put("/togglequizvisibility/:quizid", toggleQuizVisibility);

@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
 const { generateUserId } = require("../utils/helpers");
-const { handleJoinQuiz } = require("./socketHelpers.js/joinQuiz");
+const { handleJoinQuiz, startQuiz } = require("./socketHelpers.js/joinQuiz");
 const { parseMessage } = require("./socketHelpers.js/message");
 const { handleAnswer } = require("./socketHelpers.js/answerQuestion");
 
@@ -57,7 +57,7 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    Object.values(quizClients).forEach((client) => {
+    Object.values(quizClients[quizId] || {}).forEach((client) => {
       client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
     });
   };
@@ -72,19 +72,20 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    Object.values(quizClients).forEach((client) => {
+    Object.values(quizClients[quizId] || {}).forEach((client) => {
       client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
     });
   };
 
-  const getLiveQuizes = () => {
-    return liveQuizes;
+  const launchQuiz = (quizId) => {
+    const quiz = liveQuizes[quizId];
+    startQuiz(quiz, liveQuizes, quizClients);
   };
 
   return {
     addQuiz,
     deleteQuiz,
-    getLiveQuizes,
+    launchQuiz,
     wss,
   };
 };

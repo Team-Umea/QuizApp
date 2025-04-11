@@ -40,16 +40,27 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
 
   ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName }));
 
-  const startQuiz = players.length >= 2;
+  const isPublicQuiz = quiz.isPublic;
 
-  if (startQuiz) {
-    quiz.isStarted = true;
+  if (isPublicQuiz) {
+    startQuiz(quiz, liveQuizes, quizClients);
+  }
+};
 
+const startQuiz = (quiz, liveQuizes, quizClients) => {
+  const quizId = quiz._id;
+  const isPublicQuiz = quiz.isPublic;
+
+  if (!quizClients[quizId]) {
+    quizClients[quizId] = [];
+  }
+
+  if (isPublicQuiz) {
     const firstQuestion = liveQuizes[quizId].questions[0];
 
     quizClients[quizId].forEach((client) => {
       client.ws.send(
-        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 3 })
+        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 30 })
       );
     });
 
@@ -63,31 +74,43 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
           })
         );
       });
-    }, 3000);
-
-    let questionIndex = 0;
-
-    setTimeout(() => {
-      const interval = setInterval(() => {
-        if (quiz.questionIndex === questionIndex) {
-          updateCurrentQuestion(quizId, liveQuizes, quizClients);
-        }
-
-        questionIndex = quiz.questionIndex;
-
-        const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
-
-        if (isEndOfQuiz) {
-          clearInterval(interval);
-          updateCurrentQuestion(quizId, liveQuizes, quizClients);
-        }
-      }, 8000);
-    }, 8000);
+    }, 30000);
+  } else {
+    quizClients[quizId].forEach((client) => {
+      client.ws.send(
+        JSON.stringify({
+          type: "START",
+          question: { question: firstQuestion.question, options: firstQuestion.options },
+          quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
+        })
+      );
+    });
   }
+
+  quiz.isStarted = true;
+
+  let questionIndex = 0;
+
+  setTimeout(() => {
+    const interval = setInterval(() => {
+      if (quiz.questionIndex === questionIndex) {
+        updateCurrentQuestion(quizId, liveQuizes, quizClients);
+      }
+
+      questionIndex = quiz.questionIndex;
+
+      const isEndOfQuiz = questionIndex >= quiz.questions ? quiz.questions.length - 1 : true;
+
+      if (isEndOfQuiz) {
+        clearInterval(interval);
+        updateCurrentQuestion(quizId, liveQuizes, quizClients);
+      }
+    }, 10000);
+  }, 10000);
 };
 
 const ensureUniqueUsername = (users, username) => {
   return !users.some((name) => name.trim().toLowerCase() === username.trim().toLowerCase());
 };
 
-module.exports = { handleJoinQuiz };
+module.exports = { handleJoinQuiz, startQuiz };

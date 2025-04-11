@@ -128,7 +128,17 @@ const runQuiz = async (req, res) => {
   try {
     const code = "123212";
 
-    const quiz = await QuizModel.findByIdAndUpdate(quizId, { isRunning: true, code: code }).lean();
+    const quiz = await QuizModel.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    quiz.isRunning = true;
+    quiz.isLaunched = false;
+    quiz.code = code;
+
+    await quiz.save();
 
     quizManager.addQuiz(quizId, { ...quiz, code });
 
@@ -144,13 +154,50 @@ const cancelQuiz = async (req, res) => {
   const quizManager = req.quizManager;
 
   try {
-    const quiz = await QuizModel.findByIdAndUpdate(quizId, { isRunning: false, code: null }).lean();
+    const quiz = await QuizModel.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    quiz.isRunning = false;
+    quiz.isLaunched = false;
+    quiz.code = null;
+
+    await quiz.save();
 
     quizManager.deleteQuiz(quizId);
 
     res
       .status(200)
       .json({ quiz, message: `Quiz "${quiz.quizName}" has been cancelled`, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
+const launchQuiz = async (req, res) => {
+  const { quizid: quizId } = req.params;
+  const quizManager = req.quizManager;
+
+  try {
+    const quiz = await QuizModel.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    if (!quiz.isRunning) {
+      return res.status(400).json({ message: "Start quiz to launch", success: false });
+    }
+
+    quiz.isLaunched = true;
+    await quiz.save();
+
+    quizManager.launchQuiz(quizId);
+
+    res.status(200).json({ message: "Quiz launched", success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error", success: false });
@@ -165,4 +212,5 @@ module.exports = {
   runQuiz,
   cancelQuiz,
   startPublicQuizes,
+  launchQuiz,
 };

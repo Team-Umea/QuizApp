@@ -17,8 +17,6 @@ const ensureAuthenticated = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    console.log(error);
-
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(403).json({
         message: "Your session has expired, please log in again to continue",
