@@ -3,7 +3,9 @@ const { broadCastCurrentQuestion } = require("./message");
 const handleAnswer = (ws, message, liveQuizes, quizClients) => {
   const { answer, code: quizCode } = message;
 
-  const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
+  const quiz =
+    Object.values(liveQuizes).find((quiz) => quiz.code === quizCode) ||
+    liveQuizes[Object.keys(liveQuizes).find((key) => key === quizCode)];
 
   if (!quiz) {
     console.log(`Quiz not found for code: ${quizCode}`);

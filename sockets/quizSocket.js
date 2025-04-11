@@ -33,6 +33,7 @@ const quizSocket = (server) => {
             break;
           case "ANSWER_QUESTION":
             handleAnswer(ws, parsedMessage, liveQuizes, quizClients, deleteQuiz);
+            break;
           default:
             break;
         }
@@ -56,7 +57,9 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+    Object.values(quizClients).forEach((client) => {
+      client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+    });
   };
 
   const deleteQuiz = (quizId) => {
@@ -69,7 +72,9 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+    Object.values(quizClients).forEach((client) => {
+      client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+    });
   };
 
   const getLiveQuizes = () => {

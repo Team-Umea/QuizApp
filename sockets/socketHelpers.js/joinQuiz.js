@@ -4,7 +4,9 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const username = message.username;
   const quizCode = message.code;
 
-  const quiz = Object.values(liveQuizes).find((quiz) => quiz.code === quizCode);
+  const quiz =
+    Object.values(liveQuizes).find((quiz) => quiz.code === quizCode) ||
+    liveQuizes[Object.keys(liveQuizes).find((key) => key === quizCode)];
 
   if (!quiz) {
     ws.send(JSON.stringify({ type: "ERROR", message: "Quiz not found" }));
