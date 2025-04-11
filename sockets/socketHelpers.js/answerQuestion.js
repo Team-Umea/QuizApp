@@ -1,4 +1,5 @@
 const { broadCastCurrentQuestion } = require("./message");
+const QuizModel = require("../../models/QuizModel");
 
 const handleAnswer = (ws, message, liveQuizes, quizClients) => {
   const { answer, code: quizCode } = message;
@@ -64,6 +65,31 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
       });
 
       delete liveQuizes[quizId];
+
+      QuizModel.findById(quizId).then((quizData) => {
+        const isPublicQuiz = quizData.isPublic;
+
+        if (isPublicQuiz) {
+          liveQuizes[quizId] = {
+            ...quizData._doc,
+            _id: String(quizData._doc._id),
+            questionIndex: 0,
+            scores: {},
+            isStarted: false,
+          };
+
+          const publicQuizes = Object.values(liveQuizes)
+            .filter((quiz) => quiz.isPublic)
+            .map((quiz) => ({
+              _id: quiz._id,
+              quizName: quiz.quizName,
+            }));
+
+          quizClients[quizId].forEach((client) => {
+            client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+          });
+        }
+      });
 
       return {
         hasEnded: true,
