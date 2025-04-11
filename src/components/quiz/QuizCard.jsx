@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DefaultBtn from "../btn/DefaultBtn";
 import { FaRegEdit } from "react-icons/fa";
 import DeleteBtn from "../btn/DeleteBtn";
@@ -9,12 +9,40 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteQuiz, launchQuiz, toggleQuizVisibility } from "../../api/api";
 import useQuizStore from "../../hooks/useQuizStore";
 import { cancelQuiz, runQuiz } from "../../api/api";
+import usePlayQuizStore from "../../hooks/usePlayQuizStore";
+import { getPlayQuizSocket } from "../../sockets/playQuizSocket";
+import { safeParseJSON } from "../../utils/helpers";
+import { PiUsersThree } from "react-icons/pi";
 
 export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   const navigate = useNavigate();
   const { fetchQuizes } = useQuizStore();
+  const { sendMessage } = usePlayQuizStore();
   const [isRunning, setIsRunning] = useState(quiz.isRunning ? quiz.isRunning : false);
   const [quizCode, setQuizCode] = useState(quiz.code ? quiz.code : null);
+  const [clients, setClients] = useState(0);
+
+  useEffect(() => {
+    sendMessage({ type: "GET_PLAYERS", quizId: quiz._id });
+  }, []);
+
+  const socket = getPlayQuizSocket();
+
+  socket.onmessage = (event) => {
+    const message = safeParseJSON(event.data);
+    const type = message?.type;
+
+    switch (type) {
+      case "PLAYERS":
+        const matchingClients = message.quizId === quiz._id ? message.players.length : null;
+        if (matchingClients) {
+          setClients(matchingClients);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
   const deleteQuizMutation = useMutation({
     mutationFn: deleteQuiz,
@@ -80,39 +108,47 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-4 p-8 rounded-lg bg-slate-700">
-      <div className="flex md:flex-col items-start justify-between w-full md:w-auto">
-        <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
-        {!isRunning ? (
-          <DefaultBtn onClick={() => toggleQuizVisibilityMutation.mutate(quiz._id)}>
-            <span className="text-lg text-blue-200">
-              {quiz.isPublic ? "Set private" : "Set public"}
-            </span>
-          </DefaultBtn>
-        ) : (
-          quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>
-        )}
-      </div>
-      {!quiz.isPublic && (
-        <div className="flex justify-between w-full md:w-auto md:gap-x-22">
-          <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto mt-8 md:mt-0">
-            <StatusBtn onClick={toggleQuizStatus} statusColor={isRunning ? "#e01010" : "#09b537"}>
-              <span className="font-medium">{isRunning ? "Cancel" : "Run"}</span>
-            </StatusBtn>
-            {!quiz.isLaunched && isRunning && (
-              <OutlineBtn onClick={() => launchQuizMutation.mutate(quiz._id)}>
-                <span className="font-medium">Launch</span>
-              </OutlineBtn>
+    <div className="p-8 rounded-lg bg-slate-700">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-4">
+        <div className="flex md:flex-col items-start justify-between w-full md:w-auto">
+          <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
+          {!isRunning ? (
+            <DefaultBtn onClick={() => toggleQuizVisibilityMutation.mutate(quiz._id)}>
+              <span className="text-lg text-blue-200">
+                {quiz.isPublic ? "Set private" : "Set public"}
+              </span>
+            </DefaultBtn>
+          ) : (
+            quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>
+          )}
+        </div>
+        {!quiz.isPublic && (
+          <div className="flex justify-between w-full md:w-auto md:gap-x-22">
+            <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto mt-8 md:mt-0">
+              <StatusBtn onClick={toggleQuizStatus} statusColor={isRunning ? "#e01010" : "#09b537"}>
+                <span className="font-medium">{isRunning ? "Cancel" : "Run"}</span>
+              </StatusBtn>
+              {!quiz.isLaunched && isRunning && (
+                <OutlineBtn onClick={() => launchQuizMutation.mutate(quiz._id)}>
+                  <span className="font-medium">Launch</span>
+                </OutlineBtn>
+              )}
+            </div>
+            {!isRunning && (
+              <div className="flex items-center gap-x-2 md:gap-x-6">
+                <DefaultBtn onClick={navigateToEditQuiz}>
+                  <FaRegEdit size={24} />
+                </DefaultBtn>
+                <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
+              </div>
             )}
           </div>
-          {!isRunning && (
-            <div className="flex items-center gap-x-2 md:gap-x-6">
-              <DefaultBtn onClick={navigateToEditQuiz}>
-                <FaRegEdit size={24} />
-              </DefaultBtn>
-              <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
-            </div>
-          )}
+        )}
+      </div>
+      {quiz.isRunning && (
+        <div className="flex justify-end items-center gap-x-2 mt-4">
+          <p>{clients}</p>
+          <PiUsersThree size={24} />
         </div>
       )}
     </div>
