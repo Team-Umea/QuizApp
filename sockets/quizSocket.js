@@ -3,14 +3,18 @@ const { generateUserId } = require("../utils/helpers");
 const { handleJoinQuiz, startQuiz } = require("./socketHelpers.js/joinQuiz");
 const { parseMessage } = require("./socketHelpers.js/message");
 const { handleAnswer } = require("./socketHelpers.js/answerQuestion");
+const { requestPlayers } = require("./socketHelpers.js/admin");
 
 const quizSocket = (server) => {
   const wss = new WebSocket.Server({ server });
+  const clients = {};
   const liveQuizes = {};
   const quizClients = {};
 
   wss.on("connection", (ws) => {
     ws._userId = generateUserId();
+
+    clients[ws._userId] = { ws, id: ws._userId };
 
     const publicQuizes = Object.values(liveQuizes)
       .filter((quiz) => quiz.isPublic)
@@ -29,10 +33,18 @@ const quizSocket = (server) => {
       if (quizCode) {
         switch (type) {
           case "JOIN_QUIZ":
-            handleJoinQuiz(ws, parsedMessage, quizClients, liveQuizes);
+            handleJoinQuiz(ws, clients, parsedMessage, quizClients, liveQuizes);
             break;
           case "ANSWER_QUESTION":
             handleAnswer(ws, parsedMessage, liveQuizes, quizClients, deleteQuiz);
+            break;
+          default:
+            break;
+        }
+      } else {
+        switch (type) {
+          case "GET_PLAYERS":
+            requestPlayers(ws, parsedMessage, quizClients);
             break;
           default:
             break;
@@ -44,6 +56,7 @@ const quizSocket = (server) => {
       for (const quizId in quizClients) {
         quizClients[quizId] = quizClients[quizId].filter((client) => client.ws !== ws);
       }
+      delete clients[ws._userId];
     });
   });
 

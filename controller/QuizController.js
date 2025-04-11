@@ -126,7 +126,7 @@ const runQuiz = async (req, res) => {
   const quizManager = req.quizManager;
 
   try {
-    const code = "123212";
+    const code = "1";
 
     const quiz = await QuizModel.findById(quizId);
 
@@ -140,7 +140,7 @@ const runQuiz = async (req, res) => {
 
     await quiz.save();
 
-    quizManager.addQuiz(quizId, { ...quiz, code });
+    quizManager.addQuiz(quizId, { ...quiz._doc, code });
 
     res.status(200).json({ quiz, code, message: "Quiz is running", success: true });
   } catch (error) {

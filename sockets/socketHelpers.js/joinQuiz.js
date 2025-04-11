@@ -1,6 +1,7 @@
+const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
 
-const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
+const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
   const username = message.username;
   const quizCode = message.code;
 
@@ -19,6 +20,8 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   }
 
   const quizId = quiz._id;
+
+  clients[ws._userId].id = quizId;
 
   if (!quizClients[quizId]) {
     quizClients[quizId] = [];
@@ -39,6 +42,8 @@ const handleJoinQuiz = (ws, message, quizClients, liveQuizes) => {
   const players = quizClients[quizId].map((client) => client.username);
 
   ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName }));
+
+  playerJoined(quizId, quizClients, clients);
 
   const isPublicQuiz = quiz.isPublic;
 
