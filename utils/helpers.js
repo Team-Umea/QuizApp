@@ -14,4 +14,17 @@ const shuffleArray = (array) => {
   return suffledArray;
 };
 
-module.exports = { generateUserId, shuffleArray };
+const parseCookies = (cookieString) => {
+  if (!cookieString) return null;
+
+  return cookieString
+    .split(";")
+    .map((cookie) => cookie.trim())
+    .reduce((acc, cookie) => {
+      const [key, ...rest] = cookie.split("=");
+      acc[key] = decodeURIComponent(rest.join("="));
+      return acc;
+    }, {});
+};
+
+module.exports = { generateUserId, shuffleArray, parseCookies };

@@ -1,3 +1,12 @@
+const WebSocket = require("ws");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const { parseCookies } = require("../../utils/helpers");
+require("dotenv").config();
+
+const JWT_SECRET = process.env.JWT_APP_SECRET;
+const JWT_KEY = process.env.JWT_APP_TOKEN_KEY;
+
 const requestPlayers = (ws, message, quizClients) => {
   const quizId = message.quizId;
 
@@ -6,16 +15,30 @@ const requestPlayers = (ws, message, quizClients) => {
   ws.send(JSON.stringify({ type: "PLAYERS", players: clients, quizId }));
 };
 
-const playerJoined = (quizId, quizClients, clients) => {
-  const nonQuizClients = Object.entries(clients).filter(([key, value]) => key === value.id);
-
-  console.log("Client: ", nonQuizClients);
+const playerJoined = (quiz, quizClients, clients) => {
+  const quizId = quiz._id;
 
   const players = (quizClients[quizId] || []).map((client) => client.username);
 
-  nonQuizClients.forEach((client) => {
-    client[1].ws.send(JSON.stringify({ type: "PLAYERS", players, quizId }));
-  });
+  const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
+
+  quizAdmin.ws.send(JSON.stringify({ type: "PLAYERS", players, quizId }));
 };
 
-module.exports = { requestPlayers, playerJoined };
+const decodedUserId = (req) => {
+  const cookies = parseCookies(req.headers.cookie);
+
+  if (!cookies) return null;
+
+  const JWT_TOKEN = cookies[JWT_KEY];
+
+  try {
+    const decoded = jwt.verify(JWT_TOKEN, JWT_SECRET);
+
+    return decoded._id;
+  } catch (error) {
+    return null;
+  }
+};
+
+module.exports = { requestPlayers, playerJoined, decodedUserId };

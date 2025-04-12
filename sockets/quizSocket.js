@@ -3,7 +3,7 @@ const { generateUserId } = require("../utils/helpers");
 const { handleJoinQuiz, startQuiz } = require("./socketHelpers.js/joinQuiz");
 const { parseMessage } = require("./socketHelpers.js/message");
 const { handleAnswer } = require("./socketHelpers.js/answerQuestion");
-const { requestPlayers } = require("./socketHelpers.js/admin");
+const { requestPlayers, decodedUserId } = require("./socketHelpers.js/admin");
 
 const quizSocket = (server) => {
   const wss = new WebSocket.Server({ server });
@@ -11,10 +11,14 @@ const quizSocket = (server) => {
   const liveQuizes = {};
   const quizClients = {};
 
-  wss.on("connection", (ws) => {
-    ws._userId = generateUserId();
+  wss.on("connection", (ws, req) => {
+    const userId = decodedUserId(req) || `user_${generateUserId()}`;
 
-    clients[ws._userId] = { ws, id: ws._userId };
+    console.log(userId);
+
+    ws._userId = userId;
+
+    clients[userId] = { ws, id: userId };
 
     const publicQuizes = Object.values(liveQuizes)
       .filter((quiz) => quiz.isPublic)

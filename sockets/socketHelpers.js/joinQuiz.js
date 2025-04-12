@@ -21,7 +21,7 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
 
   const quizId = quiz._id;
 
-  clients[ws._userId].id = quizId;
+  // clients[ws._userId].id = quizId;
 
   if (!quizClients[quizId]) {
     quizClients[quizId] = [];
@@ -43,7 +43,7 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
 
   ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName }));
 
-  playerJoined(quizId, quizClients, clients);
+  playerJoined(quiz, quizClients, clients);
 
   const isPublicQuiz = quiz.isPublic;
 
