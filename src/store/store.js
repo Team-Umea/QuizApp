@@ -4,11 +4,13 @@ import getQuizes from "./middleware/quizMiddleware";
 import authReducer from "./authSlice";
 import quizReducer from "./quizSlice";
 import playQuizReducer from "./playQuizSlice";
+import connectedPlayersReducer from "./connectedPlayersSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   quiz: quizReducer,
   playQuiz: playQuizReducer,
+  connectedPlayers: connectedPlayersReducer,
 });
 
 const store = configureStore({

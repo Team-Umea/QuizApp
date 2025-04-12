@@ -10,14 +10,14 @@ import { deleteQuiz, launchQuiz, toggleQuizVisibility } from "../../api/api";
 import useQuizStore from "../../hooks/useQuizStore";
 import { cancelQuiz, runQuiz } from "../../api/api";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
-import { getPlayQuizSocket } from "../../sockets/playQuizSocket";
-import { safeParseJSON } from "../../utils/helpers";
 import { PiUsersThree } from "react-icons/pi";
+import useConnectedPlayersStore from "../../hooks/useConnectedPlayersStore";
 
 export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   const navigate = useNavigate();
   const { fetchQuizes } = useQuizStore();
   const { sendMessage } = usePlayQuizStore();
+  const { connectedPlayers, resetState } = useConnectedPlayersStore();
   const [isRunning, setIsRunning] = useState(quiz.isRunning ? quiz.isRunning : false);
   const [quizCode, setQuizCode] = useState(quiz.code ? quiz.code : null);
   const [clients, setClients] = useState(0);
@@ -26,23 +26,11 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
     sendMessage({ type: "GET_PLAYERS", quizId: quiz._id });
   }, []);
 
-  const socket = getPlayQuizSocket();
-
-  socket.onmessage = (event) => {
-    const message = safeParseJSON(event.data);
-    const type = message?.type;
-
-    switch (type) {
-      case "PLAYERS":
-        const matchingClients = message.quizId === quiz._id ? message.players.length : null;
-        if (matchingClients) {
-          setClients(matchingClients);
-        }
-        break;
-      default:
-        break;
-    }
-  };
+  useEffect(() => {
+    const quizPlayers =
+      connectedPlayers && connectedPlayers[quiz._id] ? connectedPlayers[quiz._id].length : 0;
+    setClients(quizPlayers);
+  }, [connectedPlayers]);
 
   const deleteQuizMutation = useMutation({
     mutationFn: deleteQuiz,
@@ -69,6 +57,7 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
 
       onRunQuiz(modalBody);
     },
+    onSettled: () => fetchQuizes(),
   });
 
   const cancelQuizMutation = useMutation({
@@ -78,7 +67,10 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
       setQuizCode(null);
       onCancelQuiz(toastMessage);
     },
-    onSettled: () => fetchQuizes(),
+    onSettled: () => {
+      fetchQuizes();
+      resetState();
+    },
   });
 
   const toggleQuizVisibilityMutation = useMutation({

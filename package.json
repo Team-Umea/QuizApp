@@ -6,6 +6,7 @@
     "scripts": {
         "start": "node proxyServer.cjs",
         "dev": "vite",
+        "dev-test":"vite --host",
         "build": "vite build",
         "lint": "eslint .",
         "preview": "vite preview"

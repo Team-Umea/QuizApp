@@ -3,6 +3,7 @@ import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 import { getPlayQuizSocket } from "../../sockets/playQuizSocket";
 import { safeParseJSON } from "../../utils/helpers";
 import { useNavigate } from "react-router";
+import useConnectedPlayersStore from "../../hooks/useConnectedPlayersStore";
 
 export default function PlayQuizWebSocketProvider({ children }) {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updatePublicQuizes,
     resetQuiz,
   } = usePlayQuizStore();
+  const { addQuizPlayers } = useConnectedPlayersStore();
 
   useEffect(() => {
     const socket = getPlayQuizSocket();
@@ -75,6 +77,9 @@ export default function PlayQuizWebSocketProvider({ children }) {
           break;
         case "PUBLIC_QUIZ_UPDATE":
           updatePublicQuizes(message.publicQuizes);
+          break;
+        case "PLAYERS":
+          addQuizPlayers(message.quizId, message.players);
           break;
         case "ERROR":
           updateError(message.message);
