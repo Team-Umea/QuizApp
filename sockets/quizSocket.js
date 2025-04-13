@@ -43,7 +43,7 @@ const quizSocket = (server) => {
             handleJoinQuiz(ws, clients, parsedMessage, quizClients, liveQuizes);
             break;
           case "ANSWER_QUESTION":
-            handleAnswer(ws, parsedMessage, liveQuizes, quizClients, deleteQuiz);
+            handleAnswer(ws, parsedMessage, liveQuizes, quizClients, clients);
             break;
           default:
             break;
@@ -63,6 +63,7 @@ const quizSocket = (server) => {
       for (const quizId in quizClients) {
         quizClients[quizId] = quizClients[quizId].filter((client) => client.ws !== ws);
       }
+
       delete clients[ws._userId];
     });
   });
@@ -93,13 +94,15 @@ const quizSocket = (server) => {
       }));
 
     Object.values(quizClients[quizId] || {}).forEach((client) => {
-      client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+      client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes, cancelled: true }));
     });
+
+    quizClients[quizId] = [];
   };
 
   const launchQuiz = (quizId) => {
     const quiz = liveQuizes[quizId];
-    startQuiz(quiz, liveQuizes, quizClients);
+    startQuiz(quiz, liveQuizes, quizClients, clients);
   };
 
   return {

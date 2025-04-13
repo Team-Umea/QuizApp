@@ -1,4 +1,4 @@
-const { playerJoined } = require("./admin");
+const { playerJoined, handleQuizEnd } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
@@ -21,8 +21,6 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
 
   const quizId = quiz._id;
 
-  // clients[ws._userId].id = quizId;
-
   if (!quizClients[quizId]) {
     quizClients[quizId] = [];
   }
@@ -41,18 +39,18 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
 
   const players = quizClients[quizId].map((client) => client.username);
 
-  ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName }));
+  ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName, quizId: quiz._id }));
 
   playerJoined(quiz, quizClients, clients);
 
   const isPublicQuiz = quiz.isPublic;
 
   if (isPublicQuiz) {
-    startQuiz(quiz, liveQuizes, quizClients);
+    startQuiz(quiz, liveQuizes, quizClients, clients);
   }
 };
 
-const startQuiz = (quiz, liveQuizes, quizClients) => {
+const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
   const quizId = quiz._id;
   const isPublicQuiz = quiz.isPublic;
 
@@ -60,9 +58,9 @@ const startQuiz = (quiz, liveQuizes, quizClients) => {
     quizClients[quizId] = [];
   }
 
-  if (isPublicQuiz) {
-    const firstQuestion = liveQuizes[quizId].questions[0];
+  const firstQuestion = liveQuizes[quizId].questions[0];
 
+  if (isPublicQuiz) {
     quizClients[quizId].forEach((client) => {
       client.ws.send(
         JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 30 })
@@ -104,14 +102,15 @@ const startQuiz = (quiz, liveQuizes, quizClients) => {
 
       questionIndex = quiz.questionIndex;
 
-      const isEndOfQuiz = questionIndex >= quiz.questions ? quiz.questions.length - 1 : true;
+      const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
 
       if (isEndOfQuiz) {
         clearInterval(interval);
         updateCurrentQuestion(quizId, liveQuizes, quizClients);
+        handleQuizEnd(quiz, quizClients, clients);
       }
-    }, 10000);
-  }, 10000);
+    }, 1000);
+  }, 1000);
 };
 
 const ensureUniqueUsername = (users, username) => {

@@ -1,7 +1,7 @@
 const { broadCastCurrentQuestion } = require("./message");
 const QuizModel = require("../../models/QuizModel");
 
-const handleAnswer = (ws, message, liveQuizes, quizClients) => {
+const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
   const { answer, code: quizCode } = message;
 
   const quiz =
@@ -24,11 +24,11 @@ const handleAnswer = (ws, message, liveQuizes, quizClients) => {
 
   if (allAnswered) {
     quiz.bonusPoints = null;
-    updateCurrentQuestion(quizId, liveQuizes, quizClients);
+    updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
   }
 };
 
-const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
+const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
   const quiz = liveQuizes[quizId];
 
   if (quiz) {
@@ -89,6 +89,12 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients) => {
             quizClients[quizId].forEach((client) => {
               client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
             });
+
+            quizClients[quizId] = [];
+
+            const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
+
+            quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
           }
         }
       );

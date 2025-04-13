@@ -140,7 +140,7 @@ const runQuiz = async (req, res) => {
 
     await quiz.save();
 
-    quizManager.addQuiz(quizId, { ...quiz._doc, code });
+    quizManager.addQuiz(quizId, { ...quiz._doc, questions: shuffleArray(quiz.questions), code });
 
     res.status(200).json({ quiz, code, message: "Quiz is running", success: true });
   } catch (error) {

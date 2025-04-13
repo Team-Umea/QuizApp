@@ -1,7 +1,6 @@
-const WebSocket = require("ws");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 const { parseCookies } = require("../../utils/helpers");
+const QuizModel = require("../../models/QuizModel");
 require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_APP_SECRET;
@@ -25,6 +24,16 @@ const playerJoined = (quiz, quizClients, clients) => {
   quizAdmin.ws.send(JSON.stringify({ type: "PLAYERS", players, quizId }));
 };
 
+const handleQuizEnd = (quiz, quizClients, clients) => {
+  QuizModel.findByIdAndUpdate(quiz._id, { isLaunched: false, isRunning: false }).then(() => {
+    const quizAdmin = Object.values(clients || {}).find((client) => client.id === quiz.user);
+
+    quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
+
+    quizClients[quiz._id] = [];
+  });
+};
+
 const decodedUserId = (req) => {
   const cookies = parseCookies(req.headers.cookie);
 
@@ -41,4 +50,4 @@ const decodedUserId = (req) => {
   }
 };
 
-module.exports = { requestPlayers, playerJoined, decodedUserId };
+module.exports = { requestPlayers, playerJoined, decodedUserId, handleQuizEnd };
