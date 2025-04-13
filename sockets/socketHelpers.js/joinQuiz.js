@@ -94,23 +94,21 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
 
   let questionIndex = 0;
 
-  setTimeout(() => {
-    const interval = setInterval(() => {
-      if (quiz.questionIndex === questionIndex) {
-        updateCurrentQuestion(quizId, liveQuizes, quizClients);
-      }
+  const interval = setInterval(() => {
+    if (quiz.questionIndex === questionIndex) {
+      updateCurrentQuestion(quizId, liveQuizes, quizClients);
+    }
 
-      questionIndex = quiz.questionIndex;
+    questionIndex = quiz.questionIndex;
 
-      const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+    const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
 
-      if (isEndOfQuiz) {
-        clearInterval(interval);
-        updateCurrentQuestion(quizId, liveQuizes, quizClients);
-        handleQuizEnd(quiz, quizClients, clients);
-      }
-    }, 1000);
-  }, 1000);
+    if (isEndOfQuiz) {
+      clearInterval(interval);
+      updateCurrentQuestion(quizId, liveQuizes, quizClients);
+      handleQuizEnd(quiz, quizClients, clients);
+    }
+  }, 5000);
 };
 
 const ensureUniqueUsername = (users, username) => {
