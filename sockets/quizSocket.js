@@ -1,5 +1,6 @@
 const WebSocket = require("ws");
-const { generateUserId } = require("../utils/helpers");
+const requestIp = require("request-ip");
+const { generateUserId, getPublicIP } = require("../utils/helpers");
 const { handleJoinQuiz, startQuiz } = require("./socketHelpers.js/joinQuiz");
 const { parseMessage } = require("./socketHelpers.js/message");
 const { handleAnswer } = require("./socketHelpers.js/answerQuestion");
@@ -11,9 +12,14 @@ const quizSocket = (server) => {
   const liveQuizes = {};
   const quizClients = {};
 
-  wss.on("connection", (ws, req) => {
+  wss.on("connection", async (ws, req) => {
     const userId = decodedUserId(req) || `user_${generateUserId()}`;
-    const origin = req.headers.origin;
+    const localIp = requestIp.getClientIp(req);
+    const port = req.socket.localPort;
+    const publicIp = await getPublicIP();
+    const requestOrigin = req.headers.origin;
+
+    const origin = `${publicIp}/${localIp}/${requestOrigin}:${port}`;
 
     const isNewClient = !Object.values(clients).some((client) => client.origin === origin);
 

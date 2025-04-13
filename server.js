@@ -12,7 +12,6 @@ require("dotenv").config();
 require("./config/db");
 
 const app = express();
-
 const PORT = process.env.PORT || 8080;
 const server = http.createServer(app);
 const quizManager = quizSocket(server);

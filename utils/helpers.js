@@ -1,3 +1,5 @@
+const axios = require("axios");
+
 const generateUserId = () => {
   return `user_${Math.random().toString(36).substr(2, 9)}`;
 };
@@ -27,4 +29,14 @@ const parseCookies = (cookieString) => {
     }, {});
 };
 
-module.exports = { generateUserId, shuffleArray, parseCookies };
+const getPublicIP = async () => {
+  try {
+    const response = await axios.get("https://api.ipify.org?format=json");
+    return response.data.ip;
+  } catch (error) {
+    console.error("Error fetching public IP:", error);
+    return null;
+  }
+};
+
+module.exports = { generateUserId, shuffleArray, parseCookies, getPublicIP };
