@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 import { getPlayQuizSocket } from "../../sockets/playQuizSocket";
 import { safeParseJSON } from "../../utils/helpers";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import useConnectedPlayersStore from "../../hooks/useConnectedPlayersStore";
+import useQuizStore from "../../hooks/useQuizStore";
 
 export default function PlayQuizWebSocketProvider({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     updateConnected,
     updateError,
@@ -21,6 +23,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updatePublicQuizes,
     resetQuiz,
   } = usePlayQuizStore();
+  const { fetchQuizes } = useQuizStore();
   const { addQuizPlayers } = useConnectedPlayersStore();
 
   useEffect(() => {
@@ -74,11 +77,17 @@ export default function PlayQuizWebSocketProvider({ children }) {
         case "RESULT":
           updateQuizResult(message.result);
           resetQuiz();
-          socket.close();
           navigate("/quiz/result");
           break;
         case "PUBLIC_QUIZ_UPDATE":
           updatePublicQuizes(message.publicQuizes);
+          if (message.cancelled) {
+            resetQuiz();
+            navigate("/");
+          }
+          break;
+        case "QUIZ_END":
+          fetchQuizes();
           break;
         case "PLAYERS":
           addQuizPlayers(message.quizId, message.players);
@@ -92,7 +101,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
 
       console.log("📩 Received:", message);
     };
-  }, []);
+  }, [location]);
 
   return <>{children}</>;
 }

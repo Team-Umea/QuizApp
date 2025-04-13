@@ -11,6 +11,7 @@ export default function Navbar() {
   const location = useLocation();
   const { isAuthenticated, isAdmin, resetAuth } = useAuthStore();
   const isAdminPage = location.pathname.includes("admin");
+  const isOnlyAdminPage = location.pathname === "/admin";
 
   const signInButtonBody =
     !isAdminPage && isAdmin && isAuthenticated ? (
@@ -54,7 +55,7 @@ export default function Navbar() {
         Join quiz
       </NavLink>
       <div className="flex gap-x-4 w-fit">
-        {isAdmin && isAdminPage && (
+        {isAdmin && isAdminPage && !isOnlyAdminPage && (
           <OutlineBtn onClick={() => navigate("/admin")}>
             <span>My quizzes</span>
           </OutlineBtn>

@@ -20,4 +20,5 @@ export const API_ENDPOINTS = {
   RUNQUIZ: `${QUIZ_SERVER_URL}/api/runquiz`,
   CANCELQUIZ: `${QUIZ_SERVER_URL}/api/cancelquiz`,
   LAUNCHQUIZ: `${QUIZ_SERVER_URL}/api/launchquiz`,
+  QUIZRESULT: `${QUIZ_SERVER_URL}/api/quizresult`,
 };

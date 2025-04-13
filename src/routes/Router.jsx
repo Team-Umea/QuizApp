@@ -12,6 +12,7 @@ import QuizPage from "../pages/QuizPage";
 import QuizResultPage from "../pages/QuizResultPage";
 import QuizLobbyPage from "../pages/QuizLobbyPage";
 import JoinQuizPage from "../pages/JoinQuizPage";
+import QuizScoresPage from "../pages/QuizScoresPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
           </ProtectedAdminRoute>
         }>
         <Route path="createquiz/:quiz?" element={<CreateQuizPage />} />
+        <Route path="quizresult/:quizid" element={<QuizScoresPage />} />
       </Route>
       <Route
         path="/user"

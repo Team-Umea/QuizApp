@@ -101,7 +101,6 @@ const playQuizSlice = createSlice({
       state.quizId = "";
       state.currentQuestion = null;
       state.quizState = null;
-      state.connected = false;
       state.quizStartDelay = null;
       state.error = null;
 

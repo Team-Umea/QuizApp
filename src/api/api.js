@@ -115,3 +115,21 @@ export const launchQuiz = async (quizId) => {
     }
   }
 };
+
+export const getQuizResult = async (quizId) => {
+  try {
+    const response = await axios.get(`${API_ENDPOINTS.QUIZRESULT}/${quizId}`, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "An error occurred");
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+};

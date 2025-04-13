@@ -100,49 +100,58 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
   };
 
   return (
-    <div className="p-8 rounded-lg bg-slate-700">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-4">
-        <div className="flex md:flex-col items-start justify-between w-full md:w-auto">
-          <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
-          {!isRunning ? (
-            <DefaultBtn onClick={() => toggleQuizVisibilityMutation.mutate(quiz._id)}>
-              <span className="text-lg text-blue-200">
-                {quiz.isPublic ? "Set private" : "Set public"}
-              </span>
-            </DefaultBtn>
-          ) : (
-            quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>
-          )}
-        </div>
-        {!quiz.isPublic && (
-          <div className="flex justify-between w-full md:w-auto md:gap-x-22">
-            <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto mt-8 md:mt-0">
-              <StatusBtn onClick={toggleQuizStatus} statusColor={isRunning ? "#e01010" : "#09b537"}>
-                <span className="font-medium">{isRunning ? "Cancel" : "Run"}</span>
-              </StatusBtn>
-              {!quiz.isLaunched && isRunning && (
-                <OutlineBtn onClick={() => launchQuizMutation.mutate(quiz._id)}>
-                  <span className="font-medium">Launch</span>
-                </OutlineBtn>
+    <div>
+      <div className="px-2 rounded-tl-lg rounded-tr-lg bg-slate-800 w-fit">
+        <DefaultBtn onClick={() => navigate(`quizresult/${quiz._id}`)}>
+          <span className="text-lg">See Results</span>
+        </DefaultBtn>
+      </div>
+      <div className="p-8 rounded-lg rounded-tl-none bg-slate-700">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-4">
+          <div className="flex md:flex-col items-start justify-between w-full md:w-auto">
+            <p className="text-xl font-medium text-gray-200">{quiz.quizName}</p>
+            {!isRunning ? (
+              <DefaultBtn onClick={() => toggleQuizVisibilityMutation.mutate(quiz._id)}>
+                <span className="text-lg text-blue-200">
+                  {quiz.isPublic ? "Set private" : "Set public"}
+                </span>
+              </DefaultBtn>
+            ) : (
+              quizCode && <p className="text-xl text-green-500 font-semibold">{quizCode}</p>
+            )}
+          </div>
+          {!quiz.isPublic && (
+            <div className="flex justify-between w-full md:w-auto md:gap-x-22">
+              <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto mt-8 md:mt-0">
+                <StatusBtn
+                  onClick={toggleQuizStatus}
+                  statusColor={isRunning ? "#e01010" : "#09b537"}>
+                  <span className="font-medium">{isRunning ? "Cancel" : "Run"}</span>
+                </StatusBtn>
+                {!quiz.isLaunched && isRunning && (
+                  <OutlineBtn onClick={() => launchQuizMutation.mutate(quiz._id)}>
+                    <span className="font-medium">Launch</span>
+                  </OutlineBtn>
+                )}
+              </div>
+              {!isRunning && (
+                <div className="flex items-center gap-x-2 md:gap-x-6">
+                  <DefaultBtn onClick={navigateToEditQuiz}>
+                    <FaRegEdit size={24} />
+                  </DefaultBtn>
+                  <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
+                </div>
               )}
             </div>
-            {!isRunning && (
-              <div className="flex items-center gap-x-2 md:gap-x-6">
-                <DefaultBtn onClick={navigateToEditQuiz}>
-                  <FaRegEdit size={24} />
-                </DefaultBtn>
-                <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />
-              </div>
-            )}
+          )}
+        </div>
+        {quiz.isRunning && (
+          <div className="flex justify-end items-center gap-x-2 mt-4">
+            <p>{clients}</p>
+            <PiUsersThree size={24} />
           </div>
         )}
       </div>
-      {quiz.isRunning && (
-        <div className="flex justify-end items-center gap-x-2 mt-4">
-          <p>{clients}</p>
-          <PiUsersThree size={24} />
-        </div>
-      )}
     </div>
   );
 }
