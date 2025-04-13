@@ -13,6 +13,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateCurrentQuestion,
     updateScore,
     updateQuizName,
+    updateQuizId,
     updateQuizState,
     updateQuizResult,
     updatePlayers,
@@ -50,6 +51,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
           break;
         case "JOINED":
           updateQuizName(message.quizName);
+          updateQuizId(message.quizId);
           updateScore(0);
           updatePlayers(message.players);
           navigate("/quiz/lobby");

@@ -5,6 +5,7 @@ export const CODE_KEY = "quizAppCode";
 const SCORE_KEY = "quizAppScore";
 const CURRENT_QUESTIONS_KEY = "quizAppCurrentQuestion";
 const QUIZ_NAME_KEY = "quizAppQuizname";
+const QUIZ_ID_KEY = "quizAppQuizId";
 const QUIZ_STATE_KEY = "quizAppStateKey";
 const QUIZ_RESULT_KEY = "quizAppResultKey";
 const PLAYERS_KEY = "quizAppPlayers";
@@ -17,6 +18,7 @@ const initialState = {
   score: JSON.parse(sessionStorage.getItem(SCORE_KEY) || "0"),
   currentQuestion: JSON.parse(sessionStorage.getItem(CURRENT_QUESTIONS_KEY) || "null"),
   quizName: sessionStorage.getItem(QUIZ_NAME_KEY) || "",
+  quizId: sessionStorage.getItem(QUIZ_ID_KEY) || "",
   quizState: JSON.parse(sessionStorage.getItem(QUIZ_STATE_KEY) || "null"),
   quizResult: JSON.parse(sessionStorage.getItem(QUIZ_RESULT_KEY) || "[]"),
   players: JSON.parse(sessionStorage.getItem(PLAYERS_KEY) || "[]"),
@@ -60,6 +62,11 @@ const playQuizSlice = createSlice({
       state.quizName = quizName;
       sessionStorage.setItem(QUIZ_NAME_KEY, quizName);
     },
+    setQuizId: (state, action) => {
+      const quizId = action.payload;
+      state.quizId = quizId;
+      sessionStorage.setItem(QUIZ_ID_KEY, quizId);
+    },
     setQuizState: (state, action) => {
       const quizState = action.payload;
       state.quizState = quizState;
@@ -91,6 +98,7 @@ const playQuizSlice = createSlice({
       state.code = "";
       state.score = 0;
       state.quizName = "";
+      state.quizId = "";
       state.currentQuestion = null;
       state.quizState = null;
       state.connected = false;
@@ -100,6 +108,7 @@ const playQuizSlice = createSlice({
       sessionStorage.removeItem(CODE_KEY);
       sessionStorage.removeItem(SCORE_KEY);
       sessionStorage.removeItem(QUIZ_NAME_KEY);
+      sessionStorage.removeItem(QUIZ_ID_KEY);
       sessionStorage.removeItem(CURRENT_QUESTIONS_KEY);
       sessionStorage.removeItem(QUIZ_STATE_KEY);
     },
@@ -114,6 +123,7 @@ export const {
   setScore,
   setCurrentQuestion,
   setQuizName,
+  setQuizId,
   setQuizState,
   setQuizResult,
   setPlayers,

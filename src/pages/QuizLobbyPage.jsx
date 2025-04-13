@@ -2,9 +2,12 @@ import React from "react";
 import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import { BounceLoader } from "react-spinners";
 import { OPTION_COLORS } from "../components/create-quiz/QuizForm";
+import CountDown from "../components/ui/CountDown";
 
 export default function QuizLobbyPage() {
-  const { quizName, players, quizStartDelay } = usePlayQuizStore();
+  const { quizName, players, quizStartDelay, publicQuizes, quizId } = usePlayQuizStore();
+
+  const isPublicQuiz = publicQuizes.some((publicQuiz) => publicQuiz._id === quizId);
 
   return (
     <div>
@@ -13,7 +16,11 @@ export default function QuizLobbyPage() {
       </div>
       <div className="flex flex-col justify-center items-center gap-y-8 min-h-[300px] bg-slate-700">
         <h3 className="text-xl">
-          {quizStartDelay ? "Quiz is starting in 3s" : "Wating for participants"}
+          {quizStartDelay
+            ? `Quiz is starting in ${(<CountDown initialTime={quizStartDelay} />)}s`
+            : isPublicQuiz
+            ? "Wating for participants"
+            : "Wating for admin to start quiz"}
         </h3>
         <BounceLoader color="darkgrey" />
       </div>

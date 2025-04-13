@@ -14,6 +14,7 @@ import {
   setPlayers,
   setQuizStartDelay,
   setPublicQuizes,
+  setQuizId,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -77,6 +78,13 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const updateQuizId = useCallback(
+    (quizId) => {
+      dispatch(setQuizId(quizId));
+    },
+    [dispatch]
+  );
+
   const updateQuizState = useCallback(
     (quizState) => {
       dispatch(setQuizState(quizState));
@@ -133,6 +141,7 @@ const usePlayQuizStore = () => {
     updateScore,
     updateCurrentQuestion,
     updateQuizName,
+    updateQuizId,
     updateQuizState,
     updateQuizResult,
     updateError,
