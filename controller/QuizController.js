@@ -204,6 +204,23 @@ const launchQuiz = async (req, res) => {
   }
 };
 
+const getQuizResult = async (req, res) => {
+  const { quizid: quizId } = req.params;
+
+  try {
+    const quiz = await QuizModel.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    res.status(200).json({ result: quiz.result, message: "Quiz launched", success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
 module.exports = {
   watchQuiz,
   toggleQuizVisibility,
@@ -213,4 +230,5 @@ module.exports = {
   cancelQuiz,
   startPublicQuizes,
   launchQuiz,
+  getQuizResult,
 };

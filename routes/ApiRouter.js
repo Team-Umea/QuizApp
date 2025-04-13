@@ -7,9 +7,11 @@ const {
   getQuizes,
   toggleQuizVisibility,
   launchQuiz,
+  getQuizResult,
 } = require("../controller/QuizController");
 
 router.get("/quizes", getQuizes);
+router.get("/quizresult/:quizid", getQuizResult);
 
 router.post("/runquiz/:quizid", runQuiz);
 router.post("/cancelquiz/:quizid", cancelQuiz);
