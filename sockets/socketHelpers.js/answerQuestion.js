@@ -51,53 +51,56 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
           return {
             username,
             score,
+            id: client.ws._userId,
           };
         })
         .sort((a, b) => b.score - a.score);
 
-      quizClients[quizId].forEach((client) => {
-        client.ws.send(
-          JSON.stringify({
-            type: "RESULT",
-            result,
-          })
+      storeResult(quizId, result, quizClients, clients).then(() => {
+        quizClients[quizId].forEach((client) => {
+          client.ws.send(
+            JSON.stringify({
+              type: "RESULT",
+              result,
+            })
+          );
+        });
+
+        delete liveQuizes[quizId];
+
+        QuizModel.findByIdAndUpdate(quizId, { isLaunched: false, isRunning: false }).then(
+          (quizData) => {
+            const isPublicQuiz = quizData.isPublic;
+
+            if (isPublicQuiz) {
+              liveQuizes[quizId] = {
+                ...quizData._doc,
+                _id: String(quizData._doc._id),
+                questionIndex: 0,
+                scores: {},
+                isStarted: false,
+              };
+
+              const publicQuizes = Object.values(liveQuizes)
+                .filter((quiz) => quiz.isPublic)
+                .map((quiz) => ({
+                  _id: quiz._id,
+                  quizName: quiz.quizName,
+                }));
+
+              quizClients[quizId].forEach((client) => {
+                client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
+              });
+
+              quizClients[quizId] = [];
+
+              const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
+
+              quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
+            }
+          }
         );
       });
-
-      delete liveQuizes[quizId];
-
-      QuizModel.findByIdAndUpdate(quizId, { isLaunched: false, isRunning: false }).then(
-        (quizData) => {
-          const isPublicQuiz = quizData.isPublic;
-
-          if (isPublicQuiz) {
-            liveQuizes[quizId] = {
-              ...quizData._doc,
-              _id: String(quizData._doc._id),
-              questionIndex: 0,
-              scores: {},
-              isStarted: false,
-            };
-
-            const publicQuizes = Object.values(liveQuizes)
-              .filter((quiz) => quiz.isPublic)
-              .map((quiz) => ({
-                _id: quiz._id,
-                quizName: quiz.quizName,
-              }));
-
-            quizClients[quizId].forEach((client) => {
-              client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
-            });
-
-            quizClients[quizId] = [];
-
-            const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
-
-            quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
-          }
-        }
-      );
     }
   }
 };
@@ -144,7 +147,36 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
   }
 };
 
+const storeResult = async (quizId, result, quizClients, clients) => {
+  const quiz = await QuizModel.findById(quizId);
+  let quizResult = quiz.result;
+
+  quizClients[quizId].forEach((client) => {
+    const origin = Object.values(clients || {}).find((c) => c.id === client.ws._userId)?.origin;
+    const score = result.find((res) => res.id === client.ws._userId).score;
+    const username = client.username;
+
+    const existingOrigin = quizResult.find((res) => res.origin === origin);
+
+    if (existingOrigin) {
+      quizResult = quizResult.map((res) => {
+        const count = (existingOrigin.count || 0) + 1;
+        const averageScore = Math.round((existingOrigin.score + score) / count);
+
+        return res.origin ? { origin, username: username, score: averageScore, count } : res;
+      });
+    } else {
+      quizResult.push({ origin, username, score, count: 1 });
+    }
+  });
+
+  const sortedResult = quizResult.sort((a, b) => b.score - a.score);
+  quiz.result = sortedResult;
+  await quiz.save();
+};
+
 module.exports = {
   handleAnswer,
   updateCurrentQuestion,
+  storeResult,
 };

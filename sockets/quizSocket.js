@@ -21,7 +21,7 @@ const quizSocket = (server) => {
 
     const origin = `${publicIp}/${localIp}/${requestOrigin}:${port}`;
 
-    const isNewClient = !Object.values(clients).some((client) => client.origin === origin);
+    const isNewClient = Object.values(clients).every((client) => client.origin !== origin);
 
     if (isNewClient) {
       clients[userId] = { ws, id: userId, origin };

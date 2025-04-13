@@ -16,6 +16,28 @@ const quizQuestionSchema = new Schema({
   },
 });
 
+const quizResultSchema = new Schema(
+  {
+    origin: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    score: {
+      type: Number,
+      required: true,
+    },
+    count: {
+      type: Number,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const quizSchema = new Schema({
   user: {
     type: String,
@@ -40,6 +62,9 @@ const quizSchema = new Schema({
   },
   isLaunched: {
     type: Boolean,
+  },
+  result: {
+    type: [quizResultSchema],
   },
 });
 
