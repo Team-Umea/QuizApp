@@ -13,12 +13,15 @@ const quizSocket = (server) => {
 
   wss.on("connection", (ws, req) => {
     const userId = decodedUserId(req) || `user_${generateUserId()}`;
+    const origin = req.headers.origin;
 
-    console.log(userId);
+    const isNewClient = !Object.values(clients).some((client) => client.origin === origin);
+
+    if (isNewClient) {
+      clients[userId] = { ws, id: userId, origin };
+    }
 
     ws._userId = userId;
-
-    clients[userId] = { ws, id: userId };
 
     const publicQuizes = Object.values(liveQuizes)
       .filter((quiz) => quiz.isPublic)
