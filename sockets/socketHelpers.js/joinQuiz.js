@@ -42,19 +42,25 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
 
     const players = quizClients[quizId].map((client) => client.username);
 
-    ws.send(JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName, quizId: quiz._id }));
+    quizClients[quizId].forEach(({ ws }) => {
+      ws.send(
+        JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName, quizId: quiz._id })
+      );
+    });
 
     playerJoined(quiz, quizClients, clients);
 
     const isPublicQuiz = quiz.isPublic;
 
+    const isFirstPlayer = quizClients[quizId].length === 1;
+
     if (isPublicQuiz) {
-      startQuiz(quiz, liveQuizes, quizClients, clients);
+      startQuiz(quiz, liveQuizes, quizClients, clients, isFirstPlayer);
     }
   });
 };
 
-const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
+const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
   const quizId = quiz._id;
   const isPublicQuiz = quiz.isPublic;
 
@@ -95,20 +101,41 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
   };
 
   if (isPublicQuiz) {
-    quizClients[quizId].forEach((client) => {
-      client.ws.send(
-        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 30 })
-      );
-    });
+    let delay = 30;
+    let delayTimer;
+
+    const sendQuizDelay = (delay) => {
+      quizClients[quizId].forEach((client) => {
+        client.ws.send(
+          JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay })
+        );
+      });
+    };
+
+    if (isFirstPlayer) {
+      sendQuizDelay();
+
+      delayTimer = new Timer(1000, () => {
+        delay--;
+        sendQuizDelay(delay);
+      });
+
+      delayTimer.start();
+    }
 
     setTimeout(() => {
-      sendQuizStart();
-      quiz.isStarted = true;
-      timer.start();
+      if (isFirstPlayer) {
+        sendQuizStart();
+        quiz.isStarted = true;
+        timer.start();
+        delayTimer.stop();
+      }
     }, 30000);
   } else {
-    sendQuizStart();
-    timer.start();
+    if (isFirstPlayer) {
+      sendQuizStart();
+      timer.start();
+    }
   }
 
   const reset = () => {
