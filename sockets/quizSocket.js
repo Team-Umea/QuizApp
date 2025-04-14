@@ -27,6 +27,11 @@ const quizSocket = (server) => {
       clients[userId] = { ws, id: userId, origin };
     }
 
+    console.log(
+      "Initial clietns: ",
+      Object.values(clients || {}).map((client) => client.origin)
+    );
+
     ws._userId = userId;
 
     const publicQuizes = Object.values(liveQuizes)
@@ -96,7 +101,7 @@ const quizSocket = (server) => {
   };
 
   const deleteQuiz = (quizId) => {
-    const inactiveUsers = Object.values(clients || {}).filter(
+    const inActiveUsers = Object.values(clients || {}).filter(
       (client) =>
         client.id !== liveQuizes[quizId].user &&
         !Object.entries(quizClients)
@@ -117,7 +122,7 @@ const quizSocket = (server) => {
 
     quizClients[quizId] = [];
 
-    inactiveUsers.forEach((client) => {
+    inActiveUsers.forEach((client) => {
       client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes, cancelled: true }));
     });
   };

@@ -21,14 +21,18 @@ const playerJoined = (quiz, quizClients, clients) => {
 
   const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
 
-  quizAdmin.ws.send(JSON.stringify({ type: "PLAYERS", players, quizId }));
+  if (quizAdmin) {
+    quizAdmin.ws.send(JSON.stringify({ type: "PLAYERS", players, quizId }));
+  }
 };
 
 const handleQuizEnd = (quiz, quizClients, clients) => {
   QuizModel.findByIdAndUpdate(quiz._id, { isLaunched: false, isRunning: false }).then(() => {
     const quizAdmin = Object.values(clients || {}).find((client) => client.id === quiz.user);
 
-    quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
+    if (quizAdmin) {
+      quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
+    }
 
     quizClients[quiz._id] = [];
   });

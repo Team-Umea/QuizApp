@@ -1,4 +1,4 @@
-const { playerJoined, handleQuizEnd } = require("./admin");
+const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
@@ -59,11 +59,46 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
   }
 
   const firstQuestion = liveQuizes[quizId].questions[0];
+  let interval;
+  let questionIndex = 0;
+
+  const startInterval = () => {
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    questionIndex = quiz.questionIndex;
+
+    interval = setInterval(() => {
+      if (quiz.questionIndex === questionIndex) {
+        updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+      }
+
+      questionIndex = quiz.questionIndex;
+
+      const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+
+      if (isEndOfQuiz) {
+        clearInterval(interval);
+        setTimeout(() => {
+          updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+        }, 3000);
+      }
+    }, 3000);
+  };
+
+  const resetInterval = () => {
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    startInterval();
+  };
 
   if (isPublicQuiz) {
     quizClients[quizId].forEach((client) => {
       client.ws.send(
-        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 30 })
+        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 3 })
       );
     });
 
@@ -77,7 +112,36 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
           })
         );
       });
-    }, 30000);
+
+      quiz.isStarted = true;
+
+      // let interval;
+      // let questionIndex = 0;
+
+      // if (interval) {
+      //   clearInterval(interval);
+      // }
+
+      startInterval();
+
+      // console.log("Before interval: ", new Date().getMinutes(), ":", new Date().getSeconds());
+
+      // interval = setInterval(() => {
+      //   console.log("Updating interval", new Date().getMinutes(), ":", new Date().getSeconds());
+      //   if (quiz.questionIndex === questionIndex) {
+      //     updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+      //   }
+
+      //   questionIndex = quiz.questionIndex;
+
+      //   const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+
+      //   if (isEndOfQuiz) {
+      //     clearInterval(interval);
+      //     updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+      //   }
+      // }, 3000);
+    }, 3000);
   } else {
     quizClients[quizId].forEach((client) => {
       client.ws.send(
@@ -88,27 +152,35 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
         })
       );
     });
+
+    startInterval();
+
+    // quiz.isStarted = true;
+
+    // let interval;
+    // let questionIndex = 0;
+
+    // if (interval) {
+    //   clearInterval(interval);
+    // }
+
+    // interval = setInterval(() => {
+    //   if (quiz.questionIndex === questionIndex) {
+    //     updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+    //   }
+
+    //   questionIndex = quiz.questionIndex;
+
+    //   const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+
+    //   if (isEndOfQuiz) {
+    //     clearInterval(interval);
+    //     updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+    //   }
+    // }, 8000);
   }
 
-  quiz.isStarted = true;
-
-  let questionIndex = 0;
-
-  const interval = setInterval(() => {
-    if (quiz.questionIndex === questionIndex) {
-      updateCurrentQuestion(quizId, liveQuizes, quizClients);
-    }
-
-    questionIndex = quiz.questionIndex;
-
-    const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
-
-    if (isEndOfQuiz) {
-      clearInterval(interval);
-      updateCurrentQuestion(quizId, liveQuizes, quizClients);
-      handleQuizEnd(quiz, quizClients, clients);
-    }
-  }, 5000);
+  quiz.resetInterval = resetInterval;
 };
 
 const ensureUniqueUsername = (users, username) => {

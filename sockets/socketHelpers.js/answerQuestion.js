@@ -1,5 +1,7 @@
 const { broadCastCurrentQuestion } = require("./message");
 const QuizModel = require("../../models/QuizModel");
+const { handleQuizEnd } = require("./admin");
+const { shuffleArray } = require("../../utils/helpers");
 
 const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
   const { answer, code: quizCode } = message;
@@ -25,6 +27,9 @@ const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
   if (allAnswered) {
     quiz.bonusPoints = null;
     updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
+    if (quiz.resetInterval) {
+      quiz.resetInterval();
+    }
   }
 };
 
@@ -76,6 +81,7 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
               liveQuizes[quizId] = {
                 ...quizData._doc,
                 _id: String(quizData._doc._id),
+                questions: shuffleArray(quizData._doc.questions),
                 questionIndex: 0,
                 scores: {},
                 isStarted: false,
@@ -91,13 +97,9 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
               quizClients[quizId].forEach((client) => {
                 client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
               });
-
-              quizClients[quizId] = [];
-
-              const quizAdmin = Object.values(clients).find((client) => client.id === quiz.user);
-
-              quizAdmin.ws.send(JSON.stringify({ type: "QUIZ_END" }));
             }
+
+            handleQuizEnd(quiz, quizClients, clients);
           }
         );
       });
@@ -140,7 +142,7 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
     quiz.scores[userId].streak = 0;
   }
 
-  const clientEntry = quizClients[quizId].find((client) => client.ws === ws);
+  const clientEntry = quizClients[quizId].find((client) => client.ws._userId === ws._userId);
 
   if (clientEntry) {
     clientEntry.hasAnswered = true;
@@ -149,6 +151,7 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
 
 const storeResult = async (quizId, result, quizClients, clients) => {
   const quiz = await QuizModel.findById(quizId);
+  const initialQuizResult = quiz.result;
   let quizResult = quiz.result;
 
   quizClients[quizId].forEach((client) => {
@@ -156,14 +159,16 @@ const storeResult = async (quizId, result, quizClients, clients) => {
     const score = result.find((res) => res.id === client.ws._userId).score;
     const username = client.username;
 
-    const existingOrigin = quizResult.find((res) => res.origin === origin);
+    const existingOrigin = initialQuizResult.find((res) => res.origin === origin);
 
     if (existingOrigin) {
       quizResult = quizResult.map((res) => {
         const count = (existingOrigin.count || 0) + 1;
         const averageScore = Math.round((existingOrigin.score + score) / count);
 
-        return res.origin ? { origin, username: username, score: averageScore, count } : res;
+        return res.origin === origin
+          ? { origin, username: username, score: averageScore, count }
+          : res;
       });
     } else {
       quizResult.push({ origin, username, score, count: 1 });
