@@ -25,9 +25,9 @@ const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients) => {
   const clients = quizClients[quizId] || [];
 
   clients.forEach(({ ws }) => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(message);
-    }
+    // if (ws.readyState === WebSocket.OPEN) {
+    ws.send(message);
+    // }
   });
 };
 

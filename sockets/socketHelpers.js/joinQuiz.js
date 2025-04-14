@@ -1,6 +1,7 @@
 const QuizModel = require("../../models/QuizModel");
 const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
+const { Timer } = require("../../utils/timer");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
   const username = message.username;
@@ -62,65 +63,26 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
   }
 
   const firstQuestion = liveQuizes[quizId].questions[0];
-  let interval;
   let questionIndex = 0;
 
-  const startInterval = () => {
-    if (interval) {
-      clearInterval(interval);
+  const timer = new Timer(8000, () => {
+    if (quiz.questionIndex === questionIndex) {
+      updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
     }
 
     questionIndex = quiz.questionIndex;
 
-    interval = setInterval(() => {
-      if (quiz.questionIndex === questionIndex) {
+    const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
+
+    if (isEndOfQuiz) {
+      timer.stop();
+      setTimeout(() => {
         updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
-      }
-
-      questionIndex = quiz.questionIndex;
-
-      const isEndOfQuiz = questionIndex >= quiz.questions.length - 1;
-
-      if (isEndOfQuiz) {
-        clearInterval(interval);
-        setTimeout(() => {
-          updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
-        }, 3000);
-      }
-    }, 3000);
-  };
-
-  const resetInterval = () => {
-    if (interval) {
-      clearInterval(interval);
+      }, 8000);
     }
+  });
 
-    startInterval();
-  };
-
-  if (isPublicQuiz) {
-    quizClients[quizId].forEach((client) => {
-      client.ws.send(
-        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 3 })
-      );
-    });
-
-    setTimeout(() => {
-      quizClients[quizId].forEach((client) => {
-        client.ws.send(
-          JSON.stringify({
-            type: "START",
-            question: { question: firstQuestion.question, options: firstQuestion.options },
-            quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
-          })
-        );
-      });
-
-      quiz.isStarted = true;
-
-      startInterval();
-    }, 3000);
-  } else {
+  const sendQuizStart = () => {
     quizClients[quizId].forEach((client) => {
       client.ws.send(
         JSON.stringify({
@@ -130,11 +92,32 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients) => {
         })
       );
     });
+  };
 
-    startInterval();
+  if (isPublicQuiz) {
+    quizClients[quizId].forEach((client) => {
+      client.ws.send(
+        JSON.stringify({ type: "PENDING", message: "Quiz is getting ready", delay: 30 })
+      );
+    });
+
+    setTimeout(() => {
+      sendQuizStart();
+      quiz.isStarted = true;
+      timer.start();
+    }, 30000);
+  } else {
+    sendQuizStart();
+    timer.start();
   }
 
-  quiz.resetInterval = resetInterval;
+  const reset = () => {
+    questionIndex = quiz.questionIndex;
+    timer.reset();
+  };
+
+  quiz.resetInterval = reset;
+  quiz.cancelInterval = () => timer.stop();
 };
 
 const ensureUniqueUsername = async (ws, quizId, users, username) => {

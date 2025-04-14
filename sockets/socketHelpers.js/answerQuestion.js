@@ -46,6 +46,10 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
       const currentQuestion = quiz.questions[quiz.questionIndex];
       broadCastCurrentQuestion(quiz, currentQuestion, quizClients);
     } else {
+      if (quiz.cancelInterval) {
+        quiz.cancelInterval();
+      }
+
       const scores = quiz.scores;
 
       const result = quizClients[quizId]
