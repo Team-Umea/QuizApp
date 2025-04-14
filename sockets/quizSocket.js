@@ -84,12 +84,28 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    Object.values(quizClients[quizId] || {}).forEach((client) => {
+    const inactiveUsers = Object.values(clients || {}).filter(
+      (client) =>
+        client.id !== liveQuizes[quizId].user &&
+        !quizClients[quizId].some((quizClient) => quizClient.ws._userId === client.id)
+    );
+
+    inactiveUsers.forEach((client) => {
       client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes }));
     });
   };
 
   const deleteQuiz = (quizId) => {
+    const inactiveUsers = Object.values(clients || {}).filter(
+      (client) =>
+        client.id !== liveQuizes[quizId].user &&
+        !Object.entries(quizClients)
+          .filter(([key]) => key !== quizId)
+          .map(([_, value]) => value)
+          .flat()
+          .some((quizClient) => quizClient.ws._userId === client.id)
+    );
+
     delete liveQuizes[quizId];
 
     const publicQuizes = Object.values(liveQuizes)
@@ -99,11 +115,11 @@ const quizSocket = (server) => {
         quizName: quiz.quizName,
       }));
 
-    Object.values(quizClients[quizId] || {}).forEach((client) => {
+    quizClients[quizId] = [];
+
+    inactiveUsers.forEach((client) => {
       client.ws.send(JSON.stringify({ type: "PUBLIC_QUIZ_UPDATE", publicQuizes, cancelled: true }));
     });
-
-    quizClients[quizId] = [];
   };
 
   const launchQuiz = (quizId) => {

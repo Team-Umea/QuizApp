@@ -73,7 +73,7 @@ const toggleQuizVisibility = async (req, res) => {
     if (quiz.isPublic) {
       quizManager.deleteQuiz(quizId);
     } else {
-      quizManager.addQuiz(quizId, quiz);
+      quizManager.addQuiz(quizId, { ...quiz._doc, isPublic: true });
     }
 
     quiz.isPublic = !quiz.isPublic;
