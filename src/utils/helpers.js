@@ -68,3 +68,5 @@ export function shuffleArray(array) {
 
   return suffledArray;
 }
+
+export const isStrNumber = (str) => str.split("").every((char) => parseInt(char));

@@ -6,6 +6,7 @@ import DefaultInput from "../form/DefaultInput";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
 import { CODE_KEY, USERNAME_KEY } from "../../store/playQuizSlice";
 import { useEffect } from "react";
+import { isStrNumber } from "../../utils/helpers";
 
 const formSchema = z.object({
   username: z
@@ -22,7 +23,9 @@ export default function JoinQuizForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: localStorage.getItem(USERNAME_KEY) || "",
-      code: sessionStorage.getItem(CODE_KEY) || "",
+      code: isStrNumber(sessionStorage.getItem(CODE_KEY) || "")
+        ? sessionStorage.getItem(CODE_KEY)
+        : "",
     },
   });
 

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { OPTION_COLORS } from "../components/create-quiz/QuizForm";
 
 export const USERNAME_KEY = "quizAppUsername";
 export const CODE_KEY = "quizAppCode";
@@ -24,6 +25,7 @@ const initialState = {
   players: JSON.parse(sessionStorage.getItem(PLAYERS_KEY) || "[]"),
   quizStartDelay: null,
   publicQuizes: JSON.parse(sessionStorage.getItem(PUBLIC_QUIZES_KEY) || "[]"),
+  userColor: OPTION_COLORS[Math.floor(Math.random() * 4)],
   error: null,
 };
 
