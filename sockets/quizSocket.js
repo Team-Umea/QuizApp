@@ -33,6 +33,7 @@ const quizSocket = (server) => {
     );
 
     ws._userId = userId;
+    ws.originUrl = origin;
 
     const publicQuizes = Object.values(liveQuizes)
       .filter((quiz) => quiz.isPublic)
