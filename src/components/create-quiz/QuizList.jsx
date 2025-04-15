@@ -61,7 +61,7 @@ export default function QuizList() {
         <Droppable droppableId="quizList">
           {(provided) => (
             <ul
-              className="flex flex-col gap-y-4"
+              className="flex flex-col gap-y-4 lg:max-h-screen h-full overflow-y-auto"
               {...provided.droppableProps}
               ref={provided.innerRef}>
               {questions.map((question, index) => (
