@@ -39,7 +39,7 @@ app.use("/api", (req, _, next) => {
   next();
 });
 
-app.use("/api", ensureAuthenticated, ensureAdmin, ApiRouter);
+app.use("/api", ensureAuthenticated, ApiRouter);
 
 server.listen(PORT, () => {
   console.log(`\x1b[36mServer is running on http://localhost:${PORT}\x1b[0m`);
