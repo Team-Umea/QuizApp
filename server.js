@@ -32,6 +32,8 @@ app.use(authechoProxy);
 
 app.use(express.json());
 
+app.get("/", (_, res) => res.send("Welcome to the quizio api"));
+
 app.use("/api", (req, _, next) => {
   req.quizManager = quizManager;
   next();
