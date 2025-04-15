@@ -1,4 +1,4 @@
-const WebSocket = require("ws");
+const { shuffleArray } = require("../../utils/helpers");
 
 const parseMessage = (ws, message) => {
   try {
@@ -15,7 +15,10 @@ const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients) => {
 
   const message = JSON.stringify({
     type: "CURRENT_QUESTION",
-    question: { question: currentQuestion.question, options: currentQuestion.options },
+    question: {
+      question: currentQuestion.question,
+      options: shuffleArray(currentQuestion.options.filter((opt) => opt)),
+    },
     quizState: {
       questionIndex: quiz.questionIndex,
       numQuestions: quiz.questions.length,
@@ -25,9 +28,7 @@ const broadCastCurrentQuestion = (quiz, currentQuestion, quizClients) => {
   const clients = quizClients[quizId] || [];
 
   clients.forEach(({ ws }) => {
-    // if (ws.readyState === WebSocket.OPEN) {
     ws.send(message);
-    // }
   });
 };
 

@@ -2,7 +2,7 @@ const QuizModel = require("../../models/QuizModel");
 const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
 const { Timer } = require("../../utils/timer");
-const { generateRandomColor } = require("../../utils/helpers");
+const { generateRandomColor, shuffleArray } = require("../../utils/helpers");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
   const username = message.username;
@@ -101,16 +101,48 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
     }
   });
 
+  const startCountDown = () => {
+    const countDownTimer = new Timer(1000, () => {
+      liveQuizes[quizId].remainingTime--;
+
+      if (liveQuizes[quizId].remainingTime < 0) {
+        liveQuizes[quizId].remainingTime = 20;
+      }
+
+      quizClients[quizId].forEach((client) => {
+        client.ws.send(
+          JSON.stringify({
+            type: "REMAINING_TIME",
+            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
+          })
+        );
+      });
+    });
+
+    countDownTimer.start();
+    quiz.stopCountDown = () => countDownTimer.stop();
+  };
+
   const sendQuizStart = () => {
+    liveQuizes[quizId].remainingTime = 20;
+
     quizClients[quizId].forEach((client) => {
       client.ws.send(
         JSON.stringify({
           type: "START",
-          question: { question: firstQuestion.question, options: firstQuestion.options },
+          question: {
+            question: firstQuestion.question,
+            options: shuffleArray(firstQuestion.options.filter((opt) => opt)),
+          },
           quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
+          time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
         })
       );
     });
+
+    // setTimeout(() => {
+    startCountDown();
+    // }, 1000);
   };
 
   if (isPublicQuiz) {

@@ -36,6 +36,8 @@ const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
 const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
   const quiz = liveQuizes[quizId];
 
+  liveQuizes[quizId].remainingTime = 20;
+
   if (quiz) {
     quiz.questionIndex++;
     quizClients[quizId].forEach((client) => {
@@ -45,9 +47,22 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
     if (quiz.questionIndex < quiz.questions.length) {
       const currentQuestion = quiz.questions[quiz.questionIndex];
       broadCastCurrentQuestion(quiz, currentQuestion, quizClients);
+
+      quizClients[quizId].forEach((client) => {
+        client.ws.send(
+          JSON.stringify({
+            type: "REMAINING_TIME",
+            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
+          })
+        );
+      });
     } else {
       if (quiz.cancelInterval) {
         quiz.cancelInterval();
+      }
+
+      if (quiz.stopCountDown) {
+        quiz.stopCountDown();
       }
 
       const scores = quiz.scores;
