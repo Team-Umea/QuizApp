@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import JoinPublicQuizForm from "../components/play-quiz/JoinPublicQuizForm";
 import { NavLink } from "react-router";
+import SearchBar from "../components/ui/SearchBar";
 
 export default function HomePage() {
   const { publicQuizes } = usePlayQuizStore();
+  const [filteredQuizes, setFilteredQuizes] = useState(publicQuizes);
+
+  const handleSeachQuizes = (query) => {
+    const searchedQuizes = publicQuizes.filter((quiz) =>
+      quiz.quizName.trim().toLowerCase().includes(query)
+    );
+    setFilteredQuizes(searchedQuizes);
+  };
 
   return (
     <div className="flex flex-col items-center gap-y-8">
@@ -24,12 +33,21 @@ export default function HomePage() {
           </NavLink>
         </div>
       </div>
-      <h3 className="text-2xl my-12 text-gray-200">Public quizzes to play</h3>
-      <ul className="flex flex-col items-center gap-y-8 w-[90%] max-w-[800px]">
-        {publicQuizes.map((quiz) => {
-          return <JoinPublicQuizForm key={quiz._id} quiz={quiz} />;
-        })}
-      </ul>
+      <div className="w-full px-4 py-6 my-12 bg-gray-900 border-b-2 border-fuchsia-500">
+        <div className="flex flex-col md:flex-row justify-center items-start md:items-center gap-x-20 gap-y-4 px-14 md:p-0 md:max-w-[80%] lg:max-w-[60%] mx-auto">
+          <h3 className="text-2xl text-blue-400 md:whitespace-nowrap">Public quizzes to play</h3>
+          <SearchBar placeholder="Search by quiz name" onChange={handleSeachQuizes} />
+        </div>
+      </div>
+      {filteredQuizes.length > 0 ? (
+        <ul className="flex flex-col items-center gap-y-8 w-[90%] max-w-[800px]">
+          {filteredQuizes.map((quiz) => {
+            return <JoinPublicQuizForm key={quiz._id} quiz={quiz} />;
+          })}
+        </ul>
+      ) : (
+        <h3 className="text-2xl text-red-600 font-medium">No quiz found </h3>
+      )}
     </div>
   );
 }
