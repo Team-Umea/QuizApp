@@ -3,10 +3,11 @@ import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import PlayQuizForm from "../components/play-quiz/PlayQuizForm";
 import { Outlet, useLocation } from "react-router";
 import { BounceLoader } from "react-spinners";
+import CountdownCircle from "../components/ui/CountDownCircle";
 
 export default function QuizPage() {
   const location = useLocation();
-  const { quizName, quizState, score, currentQuestion } = usePlayQuizStore();
+  const { quizName, quizState, score, currentQuestion, time } = usePlayQuizStore();
   const [hasAnswered, setHasAnswered] = useState(false);
 
   useEffect(() => {
@@ -38,7 +39,13 @@ export default function QuizPage() {
         </div>
       ) : (
         <div>
-          <div className="flex justify-center items-center px-8 py-4 min-h-[300px] bg-slate-700">
+          <div className="relative flex justify-center items-center px-8 py-4 min-h-[300px] bg-slate-700">
+            <div className="absolute top-6 left-1/2 md:left-4 -translate-x-1/2 md:-translate-x-0">
+              <CountdownCircle
+                initialTime={time?.initialTime || 0}
+                remainingTime={time?.remainingTime || 0}
+              />
+            </div>
             <h3 className="text-xl text-center">{question}</h3>
           </div>
           <PlayQuizForm options={options} setHasAnswered={setHasAnswered} />

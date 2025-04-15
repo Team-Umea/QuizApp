@@ -16,6 +16,7 @@ import {
   setPublicQuizes,
   setQuizId,
   setPlayersColorMap,
+  setTime,
 } from "../store/playQuizSlice";
 import { getPlayQuizSocket } from "../sockets/playQuizSocket";
 
@@ -128,6 +129,13 @@ const usePlayQuizStore = () => {
     [dispatch]
   );
 
+  const updateTime = useCallback(
+    (time) => {
+      dispatch(setTime(time));
+    },
+    [dispatch]
+  );
+
   const updateError = useCallback(
     (error) => {
       dispatch(setError(error));
@@ -152,6 +160,7 @@ const usePlayQuizStore = () => {
     updateQuizId,
     updateQuizState,
     updateQuizResult,
+    updateTime,
     updateError,
     updatePlayers,
     updatePublicQuizes,

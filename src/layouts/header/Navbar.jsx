@@ -47,13 +47,17 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="px-8 py-4 bg-gray-900 text-white font-semibold flex justify-between items-center">
-      <NavLink to="/" className="text-xl">
-        Quizio
-      </NavLink>
-      <NavLink to="/join" className="">
-        Join quiz
-      </NavLink>
+    <nav className="relative px-8 py-4 bg-gray-900 text-white font-semibold flex justify-between items-center">
+      <div className="flex flex-col gap-y-2">
+        <NavLink to="/" className="text-xl transition-all duration-300 ease hover:opacity-70">
+          Quizio
+        </NavLink>
+        <NavLink
+          to="/join"
+          className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 pl-2 text-blue-300 transition-all duration-300 ease hover:opacity-70">
+          Join quiz
+        </NavLink>
+      </div>
       <div className="flex gap-x-4 w-fit">
         {isAdmin && isAdminPage && !isOnlyAdminPage && (
           <OutlineBtn onClick={() => navigate("/admin")}>

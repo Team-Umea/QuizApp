@@ -1,7 +1,6 @@
 import React from "react";
 import { OPTION_COLORS } from "../create-quiz/QuizForm";
 import usePlayQuizStore from "../../hooks/usePlayQuizStore";
-import { shuffleArray } from "../../utils/helpers";
 
 export default function PlayQuizForm({ options = [], setHasAnswered }) {
   const { sendMessage } = usePlayQuizStore();
@@ -16,12 +15,10 @@ export default function PlayQuizForm({ options = [], setHasAnswered }) {
     setHasAnswered(true);
   };
 
-  const shuffledOptions = shuffleArray(options.filter((opt) => opt));
-
   return (
     <form onSubmit={onSubmit}>
       <ul className="grid grid-cols-1fr md:grid-cols-[1fr_1fr] gap-8 p-8 md:mt-32">
-        {shuffledOptions.map((option, index) => {
+        {options.map((option, index) => {
           return (
             <li key={index}>
               <button

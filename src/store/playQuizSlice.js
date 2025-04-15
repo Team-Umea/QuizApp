@@ -26,6 +26,7 @@ const initialState = {
   quizStartDelay: null,
   publicQuizes: JSON.parse(sessionStorage.getItem(PUBLIC_QUIZES_KEY) || "[]"),
   playersColorMap: JSON.parse(sessionStorage.getItem(PLAYERS_COLOR_MAP_KEY) || "[]"),
+  time: null,
   error: null,
 };
 
@@ -98,6 +99,9 @@ const playQuizSlice = createSlice({
       state.playersColorMap = playersColorMap;
       sessionStorage.setItem(PLAYERS_COLOR_MAP_KEY, JSON.stringify(playersColorMap));
     },
+    setTime: (state, action) => {
+      state.time = action.payload;
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -138,6 +142,7 @@ export const {
   setQuizStartDelay,
   setPublicQuizes,
   setPlayersColorMap,
+  setTime,
   setError,
   reset,
 } = playQuizSlice.actions;

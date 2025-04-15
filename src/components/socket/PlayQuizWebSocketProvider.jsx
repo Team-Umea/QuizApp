@@ -22,6 +22,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updateQuizStartDelay,
     updatePublicQuizes,
     updatePlayersColorMap,
+    updateTime,
     resetQuiz,
   } = usePlayQuizStore();
   const { fetchQuizes } = useQuizStore();
@@ -67,6 +68,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
         case "START":
           updateCurrentQuestion(message.question);
           updateQuizState(message.quizState);
+          updateTime(message.time);
           navigate("/quiz");
           break;
         case "CURRENT_QUESTION":
@@ -75,6 +77,9 @@ export default function PlayQuizWebSocketProvider({ children }) {
           break;
         case "SCORE_UPDATE":
           updateScore(message.score);
+          break;
+        case "REMAINING_TIME":
+          updateTime(message.time);
           break;
         case "RESULT":
           updateQuizResult(message.result);
