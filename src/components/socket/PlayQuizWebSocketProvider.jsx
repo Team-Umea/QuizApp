@@ -32,17 +32,14 @@ export default function PlayQuizWebSocketProvider({ children }) {
     const socket = getPlayQuizSocket();
 
     socket.onopen = () => {
-      console.log("✅ WebSocket connected");
       updateConnected(true);
     };
 
     socket.onclose = () => {
-      console.log("❌ WebSocket closed");
       updateConnected(false);
     };
 
-    socket.onerror = (e) => {
-      console.error("WebSocket error", e);
+    socket.onerror = () => {
       updateError("WebSocket error occurred");
     };
 
@@ -105,8 +102,6 @@ export default function PlayQuizWebSocketProvider({ children }) {
         default:
           break;
       }
-
-      console.log("📩 Received:", message);
     };
   }, [location]);
 

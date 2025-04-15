@@ -20,7 +20,7 @@ export default function QuizResult() {
 
   return (
     <div className="flex flex-col items-center gap-y-12">
-      <h3 className="text-xl mt-8">Quiz has ended. Thanks for playing!</h3>
+      <h3 className="text-xl text-center mt-8">Quiz has ended. Thanks for playing!</h3>
       <OutlineBtn onClick={handleCloseResult} fullWidth={false}>
         <IoHomeOutline size={24} />
         <span>Go to start</span>

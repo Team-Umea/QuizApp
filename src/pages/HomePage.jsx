@@ -43,14 +43,20 @@ export default function HomePage() {
           <SearchBar placeholder="Search by quiz name" onChange={handleSeachQuizes} />
         </div>
       </div>
-      {filteredQuizes.length > 0 ? (
-        <ul className="flex flex-col items-center gap-y-8 w-[90%] max-w-[800px]">
-          {filteredQuizes.map((quiz) => {
-            return <JoinPublicQuizForm key={quiz._id} quiz={quiz} />;
-          })}
-        </ul>
+      {publicQuizes.length === 0 ? (
+        <h3 className="text-2xl text-gray-200 font-medium">No public quizzes available</h3>
       ) : (
-        <h3 className="text-2xl text-red-600 font-medium">No quiz found </h3>
+        <>
+          {filteredQuizes.length > 0 ? (
+            <ul className="flex flex-col items-center gap-y-8 w-[90%] max-w-[800px]">
+              {filteredQuizes.map((quiz) => {
+                return <JoinPublicQuizForm key={quiz._id} quiz={quiz} />;
+              })}
+            </ul>
+          ) : (
+            <h3 className="text-2xl text-red-600 font-medium">No quiz found </h3>
+          )}
+        </>
       )}
     </div>
   );
