@@ -21,6 +21,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
     updatePlayers,
     updateQuizStartDelay,
     updatePublicQuizes,
+    updatePlayersColorMap,
     resetQuiz,
   } = usePlayQuizStore();
   const { fetchQuizes } = useQuizStore();
@@ -57,6 +58,7 @@ export default function PlayQuizWebSocketProvider({ children }) {
           updateQuizId(message.quizId);
           updateScore(0);
           updatePlayers(message.players);
+          updatePlayersColorMap(message.playersColorMap);
           navigate("/quiz/lobby");
           break;
         case "PENDING":

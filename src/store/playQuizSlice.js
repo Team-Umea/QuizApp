@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { OPTION_COLORS } from "../components/create-quiz/QuizForm";
 
 export const USERNAME_KEY = "quizAppUsername";
 export const CODE_KEY = "quizAppCode";
@@ -11,6 +10,7 @@ const QUIZ_STATE_KEY = "quizAppStateKey";
 const QUIZ_RESULT_KEY = "quizAppResultKey";
 const PLAYERS_KEY = "quizAppPlayers";
 const PUBLIC_QUIZES_KEY = "quizAppPublicQuizes";
+const PLAYERS_COLOR_MAP_KEY = "quizAppPlayersColorMap";
 
 const initialState = {
   connected: false,
@@ -25,7 +25,7 @@ const initialState = {
   players: JSON.parse(sessionStorage.getItem(PLAYERS_KEY) || "[]"),
   quizStartDelay: null,
   publicQuizes: JSON.parse(sessionStorage.getItem(PUBLIC_QUIZES_KEY) || "[]"),
-  userColor: OPTION_COLORS[Math.floor(Math.random() * 4)],
+  playersColorMap: JSON.parse(sessionStorage.getItem(PLAYERS_COLOR_MAP_KEY) || "[]"),
   error: null,
 };
 
@@ -93,6 +93,11 @@ const playQuizSlice = createSlice({
       state.publicQuizes = publicQuizes;
       sessionStorage.setItem(PLAYERS_KEY, JSON.stringify(publicQuizes));
     },
+    setPlayersColorMap: (state, action) => {
+      const playersColorMap = action.payload;
+      state.playersColorMap = playersColorMap;
+      sessionStorage.setItem(PLAYERS_COLOR_MAP_KEY, JSON.stringify(playersColorMap));
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -105,6 +110,7 @@ const playQuizSlice = createSlice({
       state.quizState = null;
       state.quizStartDelay = null;
       state.error = null;
+      state.playersColorMap = "";
 
       sessionStorage.removeItem(CODE_KEY);
       sessionStorage.removeItem(SCORE_KEY);
@@ -112,6 +118,7 @@ const playQuizSlice = createSlice({
       sessionStorage.removeItem(QUIZ_ID_KEY);
       sessionStorage.removeItem(CURRENT_QUESTIONS_KEY);
       sessionStorage.removeItem(QUIZ_STATE_KEY);
+      sessionStorage.removeItem(PLAYERS_COLOR_MAP_KEY);
     },
   },
 });
@@ -130,6 +137,7 @@ export const {
   setPlayers,
   setQuizStartDelay,
   setPublicQuizes,
+  setPlayersColorMap,
   setError,
   reset,
 } = playQuizSlice.actions;

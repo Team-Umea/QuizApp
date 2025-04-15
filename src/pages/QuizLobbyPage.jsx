@@ -3,9 +3,13 @@ import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import { BounceLoader } from "react-spinners";
 
 export default function QuizLobbyPage() {
-  const { quizName, players, quizStartDelay, publicQuizes, quizId, userColor } = usePlayQuizStore();
+  const { quizName, players, quizStartDelay, publicQuizes, quizId, playersColorMap } =
+    usePlayQuizStore();
 
   const isPublicQuiz = publicQuizes.some((publicQuiz) => publicQuiz._id === quizId);
+
+  const getPlayerColor = (username) =>
+    playersColorMap.find((player) => player.username === username).color;
 
   return (
     <div>
@@ -32,7 +36,7 @@ export default function QuizLobbyPage() {
               <li
                 key={player}
                 style={{
-                  backgroundColor: `${userColor}`,
+                  backgroundColor: `${getPlayerColor(player)}`,
                   boxShadow: "inset 0 0 20px 10px rgba(0, 0, 0, 0.5)",
                 }}
                 className="flex justify-center items-center px-8 py-4 w-fit rounded-md text-lg font-medium">
