@@ -1,5 +1,5 @@
 const QuizModel = require("../models/QuizModel");
-const { shuffleArray } = require("../utils/helpers");
+const { shuffleArray, generateCode } = require("../utils/helpers");
 
 const startPublicQuizes = async (quizManager) => {
   try {
@@ -126,7 +126,7 @@ const runQuiz = async (req, res) => {
   const quizManager = req.quizManager;
 
   try {
-    const code = "1";
+    const code = generateCode();
 
     const quiz = await QuizModel.findById(quizId);
 

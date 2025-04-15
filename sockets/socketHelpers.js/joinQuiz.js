@@ -132,10 +132,8 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
       }
     }, 30000);
   } else {
-    if (isFirstPlayer) {
-      sendQuizStart();
-      timer.start();
-    }
+    sendQuizStart();
+    timer.start();
   }
 
   const reset = () => {

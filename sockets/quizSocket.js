@@ -27,11 +27,6 @@ const quizSocket = (server) => {
       clients[userId] = { ws, id: userId, origin };
     }
 
-    console.log(
-      "Initial clietns: ",
-      Object.values(clients || {}).map((client) => client.origin)
-    );
-
     ws._userId = userId;
     ws.originUrl = origin;
 
@@ -93,7 +88,7 @@ const quizSocket = (server) => {
     const inactiveUsers = Object.values(clients || {}).filter(
       (client) =>
         client.id !== liveQuizes[quizId].user &&
-        !quizClients[quizId].some((quizClient) => quizClient.ws._userId === client.id)
+        !(quizClients[quizId] || []).some((quizClient) => quizClient.ws._userId === client.id)
     );
 
     inactiveUsers.forEach((client) => {
