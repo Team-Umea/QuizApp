@@ -100,6 +100,23 @@ const getQuizes = async (req, res) => {
   }
 };
 
+const getQuizById = async (req, res) => {
+  const { quizid: quizId } = req.params;
+
+  try {
+    const quiz = await QuizModel.findById(quizId).lean();
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found", success: false });
+    }
+
+    return res.status(200).json({ quiz, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Interal server error", success: false });
+  }
+};
+
 const deleteQuiz = async (req, res) => {
   const { quizid: quizId } = req.params;
 
@@ -225,6 +242,7 @@ module.exports = {
   watchQuiz,
   toggleQuizVisibility,
   getQuizes,
+  getQuizById,
   deleteQuiz,
   runQuiz,
   cancelQuiz,
