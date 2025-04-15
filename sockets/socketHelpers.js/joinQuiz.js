@@ -71,7 +71,7 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
   const firstQuestion = liveQuizes[quizId].questions[0];
   let questionIndex = 0;
 
-  const timer = new Timer(8000, () => {
+  const timer = new Timer(20000, () => {
     if (quiz.questionIndex === questionIndex) {
       updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
     }
@@ -84,7 +84,7 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
       timer.stop();
       setTimeout(() => {
         updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
-      }, 8000);
+      }, 20000);
     }
   });
 
