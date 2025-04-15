@@ -121,8 +121,8 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
             )}
           </div>
           {!quiz.isPublic && (
-            <div className="flex justify-between w-full md:w-auto md:gap-x-22">
-              <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto mt-8 md:mt-0">
+            <div className="flex w-full md:w-auto md:gap-x-22">
+              <div className="flex flex-col md:flex-row items-center gap-x-10 gap-y-6 w-full md:w-auto md:mt-0 w-fit">
                 <StatusBtn
                   onClick={toggleQuizStatus}
                   statusColor={isRunning ? "#e01010" : "#09b537"}>

@@ -16,7 +16,7 @@ export default function PlayQuizForm({ options = [], setHasAnswered }) {
     setHasAnswered(true);
   };
 
-  const shuffledOptions = shuffleArray(options);
+  const shuffledOptions = shuffleArray(options.filter((opt) => opt));
 
   return (
     <form onSubmit={onSubmit}>
