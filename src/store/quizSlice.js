@@ -11,10 +11,15 @@ const initialState = {
 };
 
 export const fetchQuizes = createAsyncThunk("quizes/fetchQuizes", async () => {
-  const response = await axios.get(API_ENDPOINTS.GETQUIZES, {
-    withCredentials: true,
-  });
-  return response.data;
+  try {
+    const response = await axios.get(API_ENDPOINTS.GETQUIZES, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 const quizSlice = createSlice({

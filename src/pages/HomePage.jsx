@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import usePlayQuizStore from "../hooks/usePlayQuizStore";
 import JoinPublicQuizForm from "../components/play-quiz/JoinPublicQuizForm";
 import { NavLink } from "react-router";
@@ -7,6 +7,10 @@ import SearchBar from "../components/ui/SearchBar";
 export default function HomePage() {
   const { publicQuizes } = usePlayQuizStore();
   const [filteredQuizes, setFilteredQuizes] = useState(publicQuizes);
+
+  useEffect(() => {
+    setFilteredQuizes(publicQuizes);
+  }, [publicQuizes]);
 
   const handleSeachQuizes = (query) => {
     const searchedQuizes = publicQuizes.filter((quiz) =>

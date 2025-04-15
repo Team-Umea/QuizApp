@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node proxyServer.cjs",
         "dev": "vite",
-        "dev-test":"vite --host",
+        "dev-test": "vite --host",
         "build": "vite build",
         "lint": "eslint .",
         "preview": "vite preview"
@@ -26,6 +26,7 @@
         "react-dom": "^19.0.0",
         "react-hook-form": "^7.55.0",
         "react-icons": "^5.5.0",
+        "react-loading-skeleton": "^3.5.0",
         "react-redux": "^9.2.0",
         "react-router": "^7.4.1",
         "react-spinners": "^0.15.0",
