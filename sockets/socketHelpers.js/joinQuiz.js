@@ -2,6 +2,7 @@ const QuizModel = require("../../models/QuizModel");
 const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
 const { Timer } = require("../../utils/timer");
+const { generateRandomColor } = require("../../utils/helpers");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
   const username = message.username;
@@ -38,13 +39,25 @@ const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
       return;
     }
 
-    quizClients[quizId].push({ ws, hasAnswered: false, username });
+    const color = generateRandomColor(quizClients[quizId].map((client) => client.color));
+
+    quizClients[quizId].push({ ws, hasAnswered: false, username, color });
 
     const players = quizClients[quizId].map((client) => client.username);
+    const playersColorMap = quizClients[quizId].map((client) => ({
+      username: client.username,
+      color: client.color,
+    }));
 
     quizClients[quizId].forEach(({ ws }) => {
       ws.send(
-        JSON.stringify({ type: "JOINED", players, quizName: quiz.quizName, quizId: quiz._id })
+        JSON.stringify({
+          type: "JOINED",
+          players,
+          quizName: quiz.quizName,
+          quizId: quiz._id,
+          playersColorMap,
+        })
       );
     });
 
