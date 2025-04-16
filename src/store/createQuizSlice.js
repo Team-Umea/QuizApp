@@ -31,9 +31,10 @@ const createQuizSlice = createSlice({
         state.quiz = null;
         state.questions = [];
         state.quizId = null;
-        state.editingQuestion = null;
         state.quizName = generateQuizName(state.quizes) || null;
       }
+
+      state.editingQuestion = null;
     },
     setQuizId: (state, action) => {
       state.quizId = action.payload;
