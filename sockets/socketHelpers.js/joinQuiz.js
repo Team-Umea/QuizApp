@@ -1,8 +1,8 @@
 const QuizModel = require("../../models/QuizModel");
 const { playerJoined } = require("./admin");
 const { updateCurrentQuestion } = require("./answerQuestion");
-const { Timer } = require("../../utils/timer");
-const { generateRandomColor, shuffleArray } = require("../../utils/helpers");
+const { Timer } = require("../../helpers/timer");
+const { generateRandomColor, shuffleArray } = require("../../helpers/helpers");
 
 const handleJoinQuiz = (ws, clients, message, quizClients, liveQuizes) => {
   const username = message.username;

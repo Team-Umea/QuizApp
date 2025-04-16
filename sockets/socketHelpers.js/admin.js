@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { parseCookies } = require("../../utils/helpers");
+const { parseCookies } = require("../../helpers/helpers");
 const QuizModel = require("../../models/QuizModel");
 require("dotenv").config();
 

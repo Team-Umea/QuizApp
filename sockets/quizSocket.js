@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
 const requestIp = require("request-ip");
-const { generateUserId, getPublicIP } = require("../utils/helpers");
+const { generateUserId, getPublicIP } = require("../helpers/helpers");
 const { handleJoinQuiz, startQuiz } = require("./socketHelpers.js/joinQuiz");
 const { parseMessage } = require("./socketHelpers.js/message");
 const { handleAnswer } = require("./socketHelpers.js/answerQuestion");

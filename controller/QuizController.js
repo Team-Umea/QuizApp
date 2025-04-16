@@ -1,5 +1,5 @@
 const QuizModel = require("../models/QuizModel");
-const { shuffleArray, generateCode } = require("../utils/helpers");
+const { shuffleArray, generateCode } = require("../helpers/helpers");
 
 const startPublicQuizes = async (quizManager) => {
   try {

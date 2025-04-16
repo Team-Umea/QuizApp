@@ -1,7 +1,7 @@
 const { broadCastCurrentQuestion } = require("./message");
 const QuizModel = require("../../models/QuizModel");
 const { handleQuizEnd } = require("./admin");
-const { shuffleArray } = require("../../utils/helpers");
+const { shuffleArray } = require("../../helpers/helpers");
 
 const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
   const { answer, code: quizCode } = message;

@@ -1,4 +1,4 @@
-const { shuffleArray } = require("../../utils/helpers");
+const { shuffleArray } = require("../../helpers/helpers");
 
 const parseMessage = (ws, message) => {
   try {
