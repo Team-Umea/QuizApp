@@ -3,12 +3,8 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { SERVER_URL } from "../../api/endpoints";
 
-const HAS_PINGED_KEY = "quizAppHasPinged";
-
 export default function ApiPinger({ children }) {
-  const [loading, setLoading] = useState(
-    !JSON.parse(sessionStorage.getItem(HAS_PINGED_KEY) || "false")
-  );
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const pingApi = async () => {
@@ -18,7 +14,6 @@ export default function ApiPinger({ children }) {
         throw new Error("Network response was not ok");
       }
       setLoading(false);
-      sessionStorage.setItem(HAS_PINGED_KEY, true);
     } catch (err) {
       setError(err);
       setTimeout(pingApi, 2000);
