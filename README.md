@@ -1,4 +1,4 @@
-# Quizio is a dynamic and interactive quiz platform built using the powerful **MERN stack** (MongoDB, Express, React, Node.js) — with a twist of real-time magic via **WebSockets**. Inspired by Kahoot, Quizio lets users create and host live quizzes, engage participants in real-time, and store results for later review.
+Quizio is a dynamic and interactive quiz platform built using the powerful **MERN stack** (MongoDB, Express, React, Node.js) — with a twist of real-time magic via **WebSockets**. Inspired by Kahoot, Quizio lets users create and host live quizzes, engage participants in real-time, and store results for later review.
 
 Whether you're a teacher, trainer, or just a trivia enthusiast, **Quizio** delivers a smooth and responsive experience backed by modern technologies and robust architecture.
 
@@ -85,4 +85,4 @@ npm start
 ```
 
 Check out **Quizio** in action:  
-👉 [https://quizioapp.onrender.com/](https://quizioapp.onrender.com/)]
+👉 [https://quizioapp.onrender.com/](https://quizioapp.onrender.com/)
