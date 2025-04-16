@@ -73,7 +73,6 @@ To run Quizio locally:
 ```bash
 # Clone the repo
 git clone https://github.com/yourusername/quizio.git
-cd quizio
 
 # Client - pull Client branch
 npm install
