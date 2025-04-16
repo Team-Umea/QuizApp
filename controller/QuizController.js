@@ -50,9 +50,11 @@ const watchQuiz = async (req, res) => {
       new: true,
     });
 
+    const quizes = await QuizModel.find({ user: userId });
+
     res
       .status(200)
-      .json({ quiz: updatedQuiz, message: "Quiz updated successfully", success: true });
+      .json({ quiz: updatedQuiz, quizes, message: "Quiz updated successfully", success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Interal server error", success: false });
