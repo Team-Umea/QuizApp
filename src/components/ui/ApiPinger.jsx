@@ -31,8 +31,8 @@ export default function ApiPinger({ children }) {
 
   if (loading) {
     return (
-      <div className="relative h-screen w-screen">
-        <Skeleton height={"100%"} width={"100%"} count={10} className="bg-gray-200!" />
+      <div className="relative h-screen w-screen overflow-hidden">
+        <Skeleton height={"100%"} width={"100%"} count={1} className="bg-gray-200!" />
         <p className="text-2xl font-medium absolute transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           Application is loading
         </p>

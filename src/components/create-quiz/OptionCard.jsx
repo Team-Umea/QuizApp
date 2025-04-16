@@ -40,7 +40,7 @@ export default function OptionCard({ index, bgColor }) {
       <input
         type="text"
         {...register(`options.${index}`)}
-        maxLength={50}
+        maxLength={100}
         placeholder={`Enter option ${index + 1}`}
         className="p-2 rounded-md border-2 border-gray-200 outline-none"
       />

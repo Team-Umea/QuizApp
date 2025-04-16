@@ -7,7 +7,7 @@ import QuizList from "../components/quiz/QuizList";
 export default function AdminPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { fetchQuizes } = useQuizStore();
+  const { fetchQuizes, quizes } = useQuizStore();
 
   useEffect(() => {
     fetchQuizes();

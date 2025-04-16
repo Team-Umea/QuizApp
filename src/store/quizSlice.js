@@ -3,23 +3,21 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../api/endpoints";
 import { generateQuizName } from "../utils/helpers";
 
+export const QUIZES_KEY = "quizAppQuizes";
+
 const initialState = {
-  quizes: [],
+  quizes: JSON.parse(sessionStorage.getItem(QUIZES_KEY) || "[]"),
   newQuizName: "",
   loading: true,
   error: null,
 };
 
 export const fetchQuizes = createAsyncThunk("quizes/fetchQuizes", async () => {
-  try {
-    const response = await axios.get(API_ENDPOINTS.GETQUIZES, {
-      withCredentials: true,
-    });
+  const response = await axios.get(API_ENDPOINTS.GETQUIZES, {
+    withCredentials: true,
+  });
 
-    return response.data;
-  } catch (error) {
-    console.log(error);
-  }
+  return response.data;
 });
 
 const quizSlice = createSlice({
@@ -38,11 +36,10 @@ const quizSlice = createSlice({
 
         state.quizes = quizes;
         state.newQuizName = generateQuizName(quizes);
+        sessionStorage.setItem(QUIZES_KEY, JSON.stringify(quizes));
       })
       .addCase(fetchQuizes.rejected, (state, action) => {
         state.loading = false;
-        console.log(action.error);
-
         state.error = action.error.message || "Failed to fetch quizes";
       });
   },

@@ -13,9 +13,9 @@ export const newQuizquestionSchema = z.object({
       (options) =>
         options.length >= 2 &&
         options.filter((opt) => opt).length >= 2 &&
-        options.every((opt) => (opt ? opt.length <= 50 : true)),
+        options.every((opt) => (opt ? opt.length <= 100 : true)),
       {
-        message: "At least 2 options are required and options cannot be longer than 50 characters",
+        message: "At least 2 options are required and options cannot be longer than 100 characters",
       }
     ),
   answers: z.array(z.any()).refine((answers) => answers.length > 0, {

@@ -1,33 +1,15 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import QuizCard from "./QuizCard";
-import { useQuestionContext } from "../../context/CreateQuizContext";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { watchQuiz } from "../../api/api";
+import useCreateQuizStore from "../../hooks/useCreateQuizStore";
 
 export default function QuizList() {
-  const navigate = useNavigate();
-  const { quiz } = useParams();
-  const { questionState, setQuestionState } = useQuestionContext();
-
-  useEffect(() => {
-    const quizData = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
-    if (quizData) {
-      setQuestionState((prev) => ({
-        ...prev,
-        questions: quizData.questions,
-        quizId: quizData._id,
-        quizName: quizData.quizName,
-      }));
-    }
-  }, []);
+  const { quizState, questions, updateQuestions } = useCreateQuizStore();
 
   const watchQuizMutation = useMutation({
     mutationFn: watchQuiz,
   });
-
-  const questions = questionState.questions;
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -36,16 +18,9 @@ export default function QuizList() {
     const [movedItem] = reorderedQuestions.splice(result.source.index, 1);
     reorderedQuestions.splice(result.destination.index, 0, movedItem);
 
-    setQuestionState((prev) => ({ ...prev, questions: reorderedQuestions }));
+    updateQuestions(reorderedQuestions);
 
-    watchQuizMutation.mutate({ ...questionState, questions: reorderedQuestions });
-
-    const currentQuizDataPath = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
-    const quizAsPath = encodeURIComponent(
-      JSON.stringify({ ...currentQuizDataPath, questions: reorderedQuestions })
-    );
-    const path = `/admin/createquiz/${quizAsPath}`;
-    navigate(path);
+    watchQuizMutation.mutate({ ...quizState, questions: reorderedQuestions });
   };
 
   const hasQuestions = questions && questions.length > 0;
@@ -61,7 +36,7 @@ export default function QuizList() {
         <Droppable droppableId="quizList">
           {(provided) => (
             <ul
-              className="flex flex-col gap-y-4 lg:max-h-screen h-full overflow-y-auto"
+              className="flex flex-col gap-y-4 lg:max-h-screen overflow-y-auto"
               {...provided.droppableProps}
               ref={provided.innerRef}>
               {questions.map((question, index) => (

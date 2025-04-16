@@ -1,12 +1,28 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "./endpoints";
 
+export const getQuiz = async (quizId) => {
+  try {
+    return await axios.put(`${API_ENDPOINTS.GETQUIZ}/${quizId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "An error occurred");
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+};
+
 export const watchQuiz = async (quizData) => {
   try {
     const response = await axios.put(API_ENDPOINTS.WATCHQUIZ, quizData, {
       withCredentials: true,
     });
-    return response.data.quiz;
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data.message || "An error occurred");

@@ -5,12 +5,14 @@ import authReducer from "./authSlice";
 import quizReducer from "./quizSlice";
 import playQuizReducer from "./playQuizSlice";
 import connectedPlayersReducer from "./connectedPlayersSlice";
+import createQuizReducer from "./createQuizSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   quiz: quizReducer,
   playQuiz: playQuizReducer,
   connectedPlayers: connectedPlayersReducer,
+  createQuiz: createQuizReducer,
 });
 
 const store = configureStore({

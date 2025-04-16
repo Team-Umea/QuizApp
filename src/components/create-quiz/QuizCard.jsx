@@ -1,11 +1,11 @@
 import { MdDragIndicator } from "react-icons/md";
-import { useQuestionContext } from "../../context/CreateQuizContext";
+import useCreateQuizStore from "../../hooks/useCreateQuizStore";
 
 export default function QuizCard({ question, index }) {
-  const { setQuestionState } = useQuestionContext();
+  const { updateEditingQuestion } = useCreateQuizStore();
 
   const editQuestion = () => {
-    setQuestionState((prev) => ({ ...prev, editingQuestion: question }));
+    updateEditingQuestion(question);
   };
 
   return (

@@ -3,20 +3,15 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { quizNameSchema } from "../../validations/quizName";
 import OutlineBtn from "../btn/OutlineBtn";
 import FormInputBox from "../form/FormInputBox";
-import { useQuestionContext } from "../../context/CreateQuizContext";
-import { useEffect, useState } from "react";
 import Toast from "../ui/Toast";
-import { useParams } from "react-router";
-import useQuizStore from "../../hooks/useQuizStore";
 import { useMutation } from "@tanstack/react-query";
 import { watchQuiz } from "../../api/api";
+import useCreateQuizStore from "../../hooks/useCreateQuizStore";
+import { useState } from "react";
 
 export default function QuizNameForm() {
-  const { quiz } = useParams();
-  const { newQuizName, quizes } = useQuizStore();
-  const { questionState, setQuestionState } = useQuestionContext();
+  const { quizState, quizName, quizes, updateQuizName, updateQuizId } = useCreateQuizStore();
   const [formMessage, setFormMessage] = useState("");
-  const quizName = questionState.quizName;
   const formMethods = useForm({
     resolver: zodResolver(quizNameSchema),
     defaultValues: {
@@ -31,16 +26,9 @@ export default function QuizNameForm() {
     reset,
   } = formMethods;
 
-  const isNewQuiz = !quiz;
-
-  useEffect(() => {
-    if (isNewQuiz) {
-      setQuestionState((prev) => ({ ...prev, quizName: newQuizName }));
-    }
-  }, []);
-
   const watchQuizMutation = useMutation({
     mutationFn: watchQuiz,
+    onSuccess: (data) => updateQuizId(data.quiz._id),
   });
 
   const onSubmit = (data) => {
@@ -56,11 +44,11 @@ export default function QuizNameForm() {
       return;
     }
 
-    const quizData = { ...questionState, quizName: data.quizName };
+    const quizData = { ...quizState, quizName: data.quizName };
 
     watchQuizMutation.mutate(quizData);
 
-    setQuestionState((prev) => ({ ...prev, quizName: data.quizName }));
+    updateQuizName(data.quizName);
 
     setFormMessage("Quiz name updated successfully");
 

@@ -93,12 +93,6 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
     setIsRunning((prev) => !prev);
   };
 
-  const navigateToEditQuiz = () => {
-    const quizAsPath = encodeURIComponent(JSON.stringify(quiz));
-    const path = `createquiz/${quizAsPath}`;
-    navigate(path);
-  };
-
   return (
     <div>
       <div className="px-2 rounded-tl-lg rounded-tr-lg bg-slate-800 w-fit">
@@ -136,7 +130,7 @@ export default function QuizCard({ quiz, onRunQuiz, onCancelQuiz }) {
               </div>
               {!isRunning && (
                 <div className="flex items-center gap-x-2 md:gap-x-6">
-                  <DefaultBtn onClick={navigateToEditQuiz}>
+                  <DefaultBtn onClick={() => navigate(`createquiz/${quiz._id}`)}>
                     <FaRegEdit size={24} />
                   </DefaultBtn>
                   <DeleteBtn onDelete={() => deleteQuizMutation.mutate(quiz._id)} />

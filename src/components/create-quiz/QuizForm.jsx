@@ -3,7 +3,6 @@ import OptionCard from "./OptionCard";
 import OutlineBtn from "../btn/OutlineBtn";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import FormInputBox from "../form/FormInputBox";
-import { useQuestionContext } from "../../context/CreateQuizContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newQuizquestionSchema } from "../../validations/newQuizQuestions";
 import { extractEndValues, generateID, hasDuplicates } from "../../utils/helpers";
@@ -14,21 +13,26 @@ import DeleteBtn from "../btn/DeleteBtn";
 import QuizNameForm from "./QuizNameForm";
 import { useMutation } from "@tanstack/react-query";
 import { watchQuiz } from "../../api/api";
-import { useNavigate, useParams } from "react-router";
+import useCreateQuizStore from "../../hooks/useCreateQuizStore";
 
 export const OPTION_COLORS = ["#02c228", "#05c8eb", "#cf6006", "#cf0606"];
 
 export default function QuizForm() {
-  const navigate = useNavigate();
-  const { quiz } = useParams();
-  const { questionState, setQuestionState } = useQuestionContext();
+  const {
+    quizState,
+    questions,
+    editingQuestion,
+    updateQuizId,
+    updateQuestions,
+    updateEditingQuestion,
+  } = useCreateQuizStore();
   const { scrollToTopSmooth } = useScrollTo();
   const formMethods = useForm({
     resolver: zodResolver(newQuizquestionSchema),
-    defaultValues: questionState.editingQuestion
-      ? { ...questionState.editingQuestion }
+    defaultValues: editingQuestion
+      ? { ...editingQuestion }
       : {
-          id: generateID(questionState.questions),
+          id: generateID(questions),
           question: "",
           options: ["", "", "", ""],
           answers: [0],
@@ -47,65 +51,51 @@ export default function QuizForm() {
 
   const watchQuizMutation = useMutation({
     mutationFn: watchQuiz,
-    onSuccess: (data) => {
-      setQuestionState((prev) => ({ ...prev, quizId: data._id }));
-    },
+    onSuccess: (data) => updateQuizId(data.quiz._id),
   });
 
-  const isEditing = questionState.editingQuestion;
+  const isEditing = !!editingQuestion;
 
   useEffect(() => {
     reset(
-      questionState.editingQuestion
-        ? { ...questionState.editingQuestion }
+      editingQuestion
+        ? { ...editingQuestion }
         : {
-            id: generateID(questionState.questions),
+            id: generateID(questions),
             question: "",
             options: ["", "", "", ""],
             answers: [0],
           }
     );
-  }, [isEditing]);
+  }, [editingQuestion]);
 
   const deleteQuestion = () => {
     const currentId = getValues("id");
-    const filteredQuestions = questionState.questions.filter(
-      (question) => question.id !== currentId
-    );
+    const filteredQuestions = questions.filter((question) => question.id !== currentId);
 
-    const quizData = { ...questionState, questions: filteredQuestions };
+    const quizData = { ...quizState, questions: filteredQuestions };
 
     watchQuizMutation.mutate(quizData);
 
-    updateQuizPath(filteredQuestions);
-
     reset({
-      id: generateID(questionState.questions),
+      id: generateID(filteredQuestions),
       question: "",
       options: ["", "", "", ""],
       answers: [0],
     });
 
-    setQuestionState((prev) => ({ ...prev, questions: filteredQuestions, editingQuestion: null }));
+    updateQuestions(filteredQuestions);
+    updateEditingQuestion(null);
   };
 
   const cancelEdit = () => {
-    setQuestionState((prev) => ({ ...prev, editingQuestion: null }));
+    updateEditingQuestion(null);
     reset({
-      id: generateID(questionState.questions),
+      id: generateID(questions),
       question: "",
       options: ["", "", "", ""],
       answers: [0],
     });
-  };
-
-  const updateQuizPath = (ques) => {
-    const currentQuizDataPath = quiz ? JSON.parse(decodeURIComponent(quiz)) : null;
-    const quizAsPath = encodeURIComponent(
-      JSON.stringify({ ...currentQuizDataPath, questions: ques })
-    );
-    const path = `/admin/createquiz/${quizAsPath}`;
-    navigate(path);
   };
 
   const onSubmit = (data) => {
@@ -122,7 +112,7 @@ export default function QuizForm() {
       return;
     }
 
-    const isDuplicateQuestion = questionState.questions.some((question) => {
+    const isDuplicateQuestion = questions.some((question) => {
       const ques = question.question.trim().toLowerCase();
       const newQues = data.question.trim().toLowerCase();
 
@@ -161,16 +151,12 @@ export default function QuizForm() {
     let updatedQuestions = [];
 
     if (isEditing) {
-      updatedQuestions = questionState.questions.map((question) =>
-        question.id === data.id ? data : question
-      );
+      updatedQuestions = questions.map((question) => (question.id === data.id ? data : question));
     } else {
-      updatedQuestions = [...questionState.questions, data];
+      updatedQuestions = [...questions, data];
     }
 
-    setQuestionState((prev) => ({ ...prev, questions: updatedQuestions, editingQuestion: null }));
-
-    const { editingQuestion, ...state } = questionState;
+    const { editingQuestion, ...state } = quizState;
 
     const quizData = { ...state, questions: updatedQuestions };
 
@@ -183,7 +169,10 @@ export default function QuizForm() {
       answers: [0],
     });
 
-    updateQuizPath(updatedQuestions);
+    updateEditingQuestion(null);
+    updateQuestions(updatedQuestions);
+
+    scrollToTopSmooth();
   };
 
   const onError = () => {

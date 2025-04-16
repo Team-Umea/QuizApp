@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
   WATCHQUIZ: `${SERVER_URL}/api/watchquiz`,
   TOGGLEQUIZVISIBILITY: `${SERVER_URL}/api/togglequizvisibility`,
   GETQUIZES: `${SERVER_URL}/api/quizes`,
+  GETQUIZ: `${SERVER_URL}/api/quiz`,
   RUNQUIZ: `${SERVER_URL}/api/runquiz`,
   CANCELQUIZ: `${SERVER_URL}/api/cancelquiz`,
   LAUNCHQUIZ: `${SERVER_URL}/api/launchquiz`,
