@@ -23,7 +23,6 @@ const watchQuiz = async (req, res) => {
 
   try {
     const existingQuiz = await QuizModel.findOne({ _id: quizData.quizId });
-
     const { quizId, ...cleanedQuizData } = quizData;
 
     if (!existingQuiz) {
