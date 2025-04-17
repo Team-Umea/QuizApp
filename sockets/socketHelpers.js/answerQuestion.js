@@ -36,7 +36,7 @@ const handleAnswer = (ws, message, liveQuizes, quizClients, clients) => {
 const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
   const quiz = liveQuizes[quizId];
 
-  liveQuizes[quizId].remainingTime = 20;
+  liveQuizes[quizId].remainingTime = 30;
 
   if (quiz) {
     quiz.questionIndex++;
@@ -52,7 +52,7 @@ const updateCurrentQuestion = (quizId, liveQuizes, quizClients, clients) => {
         client.ws.send(
           JSON.stringify({
             type: "REMAINING_TIME",
-            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
+            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 30 },
           })
         );
       });

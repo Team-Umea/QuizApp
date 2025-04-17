@@ -84,7 +84,7 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
   const firstQuestion = liveQuizes[quizId].questions[0];
   let questionIndex = 0;
 
-  const timer = new Timer(20000, () => {
+  const timer = new Timer(30000, () => {
     if (quiz.questionIndex === questionIndex) {
       updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
     }
@@ -97,7 +97,7 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
       timer.stop();
       setTimeout(() => {
         updateCurrentQuestion(quizId, liveQuizes, quizClients, clients);
-      }, 20000);
+      }, 30000);
     }
   });
 
@@ -106,14 +106,14 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
       liveQuizes[quizId].remainingTime--;
 
       if (liveQuizes[quizId].remainingTime < 0) {
-        liveQuizes[quizId].remainingTime = 20;
+        liveQuizes[quizId].remainingTime = 30;
       }
 
       quizClients[quizId].forEach((client) => {
         client.ws.send(
           JSON.stringify({
             type: "REMAINING_TIME",
-            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
+            time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 30 },
           })
         );
       });
@@ -124,7 +124,7 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
   };
 
   const sendQuizStart = () => {
-    liveQuizes[quizId].remainingTime = 20;
+    liveQuizes[quizId].remainingTime = 30;
 
     quizClients[quizId].forEach((client) => {
       client.ws.send(
@@ -135,14 +135,12 @@ const startQuiz = (quiz, liveQuizes, quizClients, clients, isFirstPlayer) => {
             options: shuffleArray(firstQuestion.options.filter((opt) => opt)),
           },
           quizState: { questionIndex: 0, numQuestions: quiz.questions.length },
-          time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 20 },
+          time: { remainingTime: liveQuizes[quizId].remainingTime, initialTime: 30 },
         })
       );
     });
 
-    // setTimeout(() => {
     startCountDown();
-    // }, 1000);
   };
 
   if (isPublicQuiz) {
