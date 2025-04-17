@@ -133,7 +133,12 @@ const correctAnswer = (ws, quiz, quizClients, currentQuestion, answer) => {
 
   const quizId = quiz._id;
 
-  const isRightAnswer = currentQuestion.answers.some((ans) => parseInt(ans) === parseInt(answer));
+  const options = quiz.questions[quiz.questionIndex].options;
+  const indexOfAnswer = options.indexOf(answer);
+
+  const isRightAnswer = currentQuestion.answers.some(
+    (ans) => parseInt(ans) === parseInt(indexOfAnswer)
+  );
 
   const userId = ws._userId;
 
